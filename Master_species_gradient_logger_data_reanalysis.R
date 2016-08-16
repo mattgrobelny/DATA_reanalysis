@@ -416,6 +416,13 @@ AFGP_Pos_data<-data.frame(AFGP_Pos=all_species_no_Lsq_df)
 colnames(AFGP_Pos_data)<-c("AFGP_Pos")
 AFGP_Neg_data<-data.frame(AFGP_Neg=all_species$Lsq_data)
 
+## Test for normality
+#shapiro.test(AFGP_Pos_data$AFGP_Pos) # reject null (not normal distribution)
+qqnorm(AFGP_Pos_data$AFGP_Pos) # does not look normal (values do not fall on a straight line)
+
+#shapiro.test(AFGP_Neg_data$AFGP_Neg) # reject null (not normal distribution)
+qqnorm(AFGP_Neg_data$AFGP_Neg) # does not look normal (values do not fall on a straight line)
+
 ## Plot CDFs 
 # An empirical cumulative distribution function (CDF) is a non-parametric estimator of the underlying 
 # CDF of a random variable.  It assigns a probability of 1/n to each datum, 
@@ -456,3 +463,5 @@ base3 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = AFGP_con
   theme_bw()
 
 base3
+
+#fix fonts and I think this analysis is good.
