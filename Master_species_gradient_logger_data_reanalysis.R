@@ -224,8 +224,10 @@ col="Set1"
 base2 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],fill = stack_all_species[,2]))
 # finish_graph<-xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
 #   geom_vline(xintercept = -1.130, color= "blue")
-base2+geom_density(stat="density",adjust = x,na.rm=TRUE,position = pos,alpha = a)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
-  geom_vline(xintercept = -1.130, color= "blue")+scale_y_continuous(expand = c(0,0)) 
+base2+geom_density(stat="density",adjust = x,na.rm=TRUE,position = pos,alpha = a)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+
+  geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  scale_y_continuous(expand = c(0,0)) 
 
 # HARD TO UNDERSTAND GRAPH NOT HELPFUL
 # #Histogram 
@@ -262,8 +264,9 @@ base2+geom_density(stat="density",adjust = x,na.rm=TRUE,position = pos,alpha = a
 base2+geom_histogram(aes(y=(..count../sum(..count..)),fill=AFGP_content),na.rm=TRUE, binwidth = 0.2)+
   xlim(-2, 2)+
   scale_fill_brewer(palette=col)+
-  theme_bw()+geom_vline(xintercept = 1.490, color="red")+
-  geom_vline(xintercept = -1.130, color= "blue")+
+  theme_bw()+
+  geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
   scale_y_continuous(expand = c(0,0),labels = scales::percent) 
 
 ################################################################################################################################################################
@@ -362,8 +365,9 @@ ggplot(data=x$output.data,
     xlab("Temperature C")+
     ylab("Seconds Spent at Temp")+
     xlim(-2, 2)+
-    theme_bw()+geom_vline(xintercept = 1.490, color="red")+
-    geom_vline(xintercept = -1.130, color= "blue")+
+    theme_bw()+
+    geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+    geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
     scale_y_continuous(expand = c(0,0)) 
 }
 
@@ -475,10 +479,29 @@ base3 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = AFGP_con
   xlim(-2, 2)+
   ylab(expression(hat(F)[n](x)))+
   xlab(parse(text=paste("Temperature (C","^o",")")))+
-  geom_vline(xintercept = 1.490, color="red")+
-  geom_vline(xintercept = -1.130, color= "blue")+
+  geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  scale_y_continuous(expand = c(0,0)) +
   theme_bw()
 
 base3
 
 #fix fonts and I think this analysis is good.
+
+######################################################################
+
+# CDF transformation on individual species
+
+base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = ind))+
+  
+  stat_ecdf(na.rm=TRUE)+
+  #scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
+  xlim(-2, 2)+
+  ylab(expression(hat(F)[n](x)))+
+  xlab(parse(text=paste("Temperature (C","^o",")")))+
+  geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  scale_y_continuous(expand = c(0,0))+
+  theme_bw()
+
+base4
