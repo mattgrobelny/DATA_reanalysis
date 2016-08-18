@@ -7,6 +7,9 @@ library(ggplot2)
 library(RColorBrewer)
 library(fields)
 library(MASS)
+library(FSA)
+library(dunn.test)
+library(lattice)
 
 
 # Import data set 
@@ -505,3 +508,25 @@ base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = ind))+
   theme_bw()
 
 base4
+
+############################################################################################################################################
+# Kruskal-Wallis Rank Sum Test AFGP Pos to Neg
+
+kruskal.test(values ~ AFGP_content, 
+             data = stack_all_species)
+
+dunnTest(values ~ AFGP_content, 
+          data = stack_all_species,
+         method="none") 
+
+############################################################################################################################################
+# Kruskal-Wallis Rank Sum Test species
+
+kruskal.test(values ~ ind, 
+             data = stack_all_species)
+
+#Post-hoc test 
+
+dunnTest(values ~ ind, 
+         data = stack_all_species,
+         method="bonferroni") 
