@@ -213,7 +213,7 @@ for (i in 22:27){
 ## BETTER Distribution of desnity of temperatures per species 
 
 # x = the smoothness of the plot ( 0= raw ;; 2= smooth) 
-x=1
+x=2
 pos = "identity"
 # a = to opasity of graphs how see thru they are
 a=0.5
@@ -234,8 +234,8 @@ base2+geom_density(stat="density",adjust = x,na.rm=TRUE,position = pos,alpha = a
 
 # HARD TO UNDERSTAND GRAPH NOT HELPFUL
 # #Histogram 
-# base2+geom_histogram(aes(y=(..count../sum(..count..))*100),na.rm=TRUE, binwidth = 0.2)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
-#   geom_vline(xintercept = -1.130, color= "blue")+scale_y_continuous(expand = c(0,0)) 
+ base2+geom_histogram(aes(y=(..count../sum(..count..))*100),na.rm=TRUE, binwidth = 0.2)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
+   geom_vline(xintercept = -1.130, color= "blue")+scale_y_continuous(expand = c(0,0)) 
 
 
 ################################################################################################################################################################
@@ -470,8 +470,48 @@ mtext(text = expression(hat(F)[n](x)), side = 2, line = 2.5)
 # The KS-test uses the maximum vertical deviation between the two curves as the statistic D.
 
 KS_Test_AFGP_neg_vs_pos<-ks.test(AFGP_Pos_data$AFGP_Pos,AFGP_Neg_data$AFGP_Neg)
-
+KS_Test_AFGP_neg_vs_pos
 ######## From KS test ---> Significant difference between the two distributions 
+
+####
+
+##############
+# All vs all KS- test
+
+# Ngib vs Than
+KS_Than_ngib<-ks.test(all_species[,1],all_species[,2])
+KS_Than_ngib # sig
+
+KS_cwil_ngib<-ks.test(all_species[,1],all_species[,3])
+KS_cwil_ngib # sig 
+
+KS_lsq_ngib<-ks.test(all_species[,1],all_species[,4])
+KS_lsq_ngib # sig
+
+KS_Ncor_ngib<-ks.test(all_species[,1],all_species[,5])
+KS_Ncor_ngib # sig
+
+KS_Cwil_Than<-ks.test(all_species[,2],all_species[,3])
+KS_Cwil_Than # sig
+
+KS_Lsq_Than<-ks.test(all_species[,2],all_species[,4])
+KS_Lsq_Than # sig
+
+KS_Lsq_Cwil<-ks.test(all_species[,2],all_species[,5])
+KS_Lsq_Cwil # sig
+
+KS_Ncor_Cwil<-ks.test(all_species[,3],all_species[,5])
+KS_Ncor_Cwil # sig
+
+KS_Ncor_Lsq<-ks.test(all_species[,4],all_species[,5])
+KS_Ncor_Lsq # sig
+
+####### Ncor Lsq Cwil Ngib Than  *= sig 
+# Ncor
+# Lsq
+# Cwil
+# Ngib
+# Than                *
 
 ############################################################################################################
 
@@ -480,7 +520,7 @@ base3 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = AFGP_con
   stat_ecdf(na.rm=TRUE)+
   scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
   xlim(-2, 2)+
-  ylab(expression(hat(F)[n](x)))+
+  ylab("Cumulative Probablility")+
   xlab(parse(text=paste("Temperature (C","^o",")")))+
   geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
   geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
@@ -494,13 +534,13 @@ base3
 ######################################################################
 
 # CDF transformation on individual species
+colnames(stack_all_species)<-c("Temperature","Species","AFGP_content")
 
-base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = ind))+
-  
+base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = Species))+
   stat_ecdf(na.rm=TRUE)+
   #scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
   xlim(-2, 2)+
-  ylab(expression(hat(F)[n](x)))+
+  ylab("Cumulative Probablility")+
   xlab(parse(text=paste("Temperature (C","^o",")")))+
   geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
   geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
@@ -509,24 +549,25 @@ base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = ind))+
 
 base4
 
+
 ############################################################################################################################################
 # Kruskal-Wallis Rank Sum Test AFGP Pos to Neg
 
-kruskal.test(values ~ AFGP_content, 
+kruskal.test(Temperature ~ AFGP_content, 
              data = stack_all_species)
 
-dunnTest(values ~ AFGP_content, 
+dunnTest(Temperature ~ AFGP_content, 
           data = stack_all_species,
          method="none") 
 
 ############################################################################################################################################
 # Kruskal-Wallis Rank Sum Test species
 
-kruskal.test(values ~ ind, 
+kruskal.test(Temperature ~ Species, 
              data = stack_all_species)
 
 #Post-hoc test 
 
-dunnTest(values ~ ind, 
+dunnTest(Temperature ~ Species, 
          data = stack_all_species,
          method="bonferroni") 
