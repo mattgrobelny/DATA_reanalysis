@@ -571,3 +571,45 @@ kruskal.test(Temperature ~ Species,
 dunnTest(Temperature ~ Species, 
          data = stack_all_species,
          method="bonferroni") 
+
+############################################################################################################################################
+############################################################################################################################################
+# Bootstraping
+# bootobject <- boot(data= , statistic= , R=, ...) where
+ 
+
+library(boot)
+# function to obtain mean from the data 
+samplemean <- function(x, d) {
+  return(mean(x[d]))
+}
+
+results_lsq <- boot(data=na.omit(all_species$Lsq_data), statistic=samplemean, R=6000)
+results_ncor <- boot(data=na.omit(all_species$Ncor_data), statistic=samplemean, R=1000)
+results_than <- boot(data=na.omit(all_species$Than_data), statistic=samplemean, R=1000)
+results_cwil <- boot(data=na.omit(all_species$Cwil_data), statistic=samplemean, R=1000)
+results_Ngib <- boot(data=na.omit(all_species$Ngib_data), statistic=samplemean, R=1000)
+
+
+# view results
+results_lsq
+results_ncor
+results_than
+results_cwil
+results_Ngib
+
+plot(results_lsq)
+
+# get 95% confidence interval 
+boot.ci(results_lsq, type="all")
+
+# This is not how you would do a simulation test (not a bootstrap test here). 
+# What you want to do mix all the data together and then randomly redivide into two new groups find 
+# the mean of each group take the difference and plot it. Repeat lots of times, 10,000 for instance. 
+# Then you can find a p-value but counting all the results as or more extreme than your observed result 
+# (the original difference in means) and divide by 10000. This is a non-parametric version of a t-test called
+# a permutation test. However, you could use a t-test for difference in means but there are more assumptions 
+# about the data than this test.
+
+############################################################################################################################################
+kruskal.test(values~ind , data=stack_all_species)
