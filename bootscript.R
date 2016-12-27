@@ -39,12 +39,23 @@ samplevar <- function(x, d) {
 
 run_boot_strap <- function(data,statfuntion,r_val){
 
-  
+pb <- txtProgressBar(min=0, max=5,style=3)
+setTxtProgressBar(pb, 0)
+
 results_lsq <- boot(data=na.omit(data$Lsq_data), statistic=statfuntion, R=r_val)
+setTxtProgressBar(pb, 1)
+
 results_ncor <- boot(data=na.omit(data$Ncor_data), statistic=statfuntion, R=r_val)
+setTxtProgressBar(pb, 2)
+
 results_than <- boot(data=na.omit(data$Than_data), statistic=statfuntion, R=r_val)
+setTxtProgressBar(pb, 3)
+
 results_cwil <- boot(data=na.omit(data$Cwil_data), statistic=statfuntion, R=r_val)
+setTxtProgressBar(pb, 4)
+
 results_Ngib <- boot(data=na.omit(data$Ngib_data), statistic=statfuntion, R=r_val)
+setTxtProgressBar(pb, 5)
 
 
 # # view results
@@ -55,23 +66,23 @@ results_Ngib <- boot(data=na.omit(data$Ngib_data), statistic=statfuntion, R=r_va
 # results_Ngib
 
 plot(results_lsq)
-title<-paste(names(data)[4],"of",as.character(substitute(statfuntion)))
+title<-paste(names(data)[4],"of",as.character(substitute(statfuntion)),"Btrep:",r_val)
 title(sub=title)
 
 plot(results_ncor)
-title<-paste(names(data)[5],"of",as.character(substitute(statfuntion)))
+title<-paste(names(data)[5],"of",as.character(substitute(statfuntion)),"Btrep:",r_val)
 title(sub=title)
 
 plot(results_than)
-title<-paste(names(data)[2],"of",as.character(substitute(statfuntion)))
+title<-paste(names(data)[2],"of",as.character(substitute(statfuntion)),"Btrep:",r_val)
 title(sub=title)
 
 plot(results_cwil)
-title<-paste(names(data)[3],"of:",as.character(substitute(statfuntion)))
+title<-paste(names(data)[3],"of",as.character(substitute(statfuntion)),"Btrep:",r_val)
 title(sub=title)
 
 plot(results_Ngib)
-title<-paste(names(data)[1],"of:",as.character(substitute(statfuntion)))
+title<-paste(names(data)[1],"of",as.character(substitute(statfuntion)),"Btrep:",r_val)
 title(sub=title)
 
 # get 95% confidence interval 
@@ -112,13 +123,13 @@ boot_strap_rep = c(results_lsq_ci$R,
 
 boot_data = data.frame(c("Lsq","Ncor","Than","Cwil","Ngib"),boot_strap_stats,boot_strap_ci_Low, boot_strap_ci_high,boot_strap_rep)
 
-colnames(boot_data)<-c("Species","Boot_mean","Boot_CI_low","Boot_CI_high","Boot_reps")
+colnames(boot_data)<-c("Species","Boot_stat_val","Boot_CI_low","Boot_CI_high","Boot_reps")
 return(boot_data)
 }
 ############################################################################################################################################
 
 # Run bootstrap functions on all data  
-r_val = 1000
+r_val = 2000
 boot_data_all_data = run_boot_strap(all_species, samplemean, r_val)
 boot_data_var_all_data = run_boot_strap(all_species,samplevar, r_val)
 
@@ -126,12 +137,13 @@ boot_data_all_data
 boot_data_var_all_data
 
 # Run bootstrap fucntion on last 500 data points 
-r_val = 1000
-boot_data_all_data = run_boot_strap(all_species, samplemean, r_val)
-boot_data_var_all_data = run_boot_strap(all_species,samplevar, r_val)
+r_val = 2000
+boot_data_last_1000 = run_boot_strap(all_species_1000, samplemean, r_val)
+boot_data_var_last_1000  = run_boot_strap(all_species_1000,samplevar, r_val)
 
-boot_data_all_data
-boot_data_var_all_data
+boot_data_last_1000
+boot_data_var_last_1000
+
 # This is not how you would do a simulation test (not a bootstrap test here). 
 # What you want to do mix all the data together and then randomly redivide into two new groups find 
 # the mean of each group take the difference and plot it. Repeat lots of times, 10,000 for instance. 

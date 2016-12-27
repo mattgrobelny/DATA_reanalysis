@@ -124,7 +124,7 @@ base3
 # CDF transformation on individual species
 colnames(stack_all_species)<-c("Temperature","Species","AFGP_content")
 
-base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = Species))+
+base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = Species),color=brewer.pal(5,"Set1"))+
   stat_ecdf(na.rm=TRUE)+
   #scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
   xlim(-2, 2)+
@@ -136,4 +136,6 @@ base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = Species)
   theme_bw()
 
 base4
+
+
 
