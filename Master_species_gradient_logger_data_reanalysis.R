@@ -189,11 +189,91 @@ for (i in 22:27){
 #Ncor_data<-data.frame(Ncor_data)
 
 #combining all data
-# all_species<-vector()
-# all_species<- data.frame(Ngib_data,Than_data,Cwil_data,Lsq_data,Ncor_data)
-# all_species_no_Ngib<- data.frame(Ngib_data,Than_data,Cwil_data,Lsq_data,Ncor_data)
-# 
-# stack_all_species<-stack(all_species)
+all_species<-vector()
+all_species<- data.frame(Ngib_data,Than_data,Cwil_data,Lsq_data,Ncor_data)
+all_species_no_Ngib<- data.frame(Ngib_data,Than_data,Cwil_data,Lsq_data,Ncor_data)
+
+stack_all_species<-stack(all_species)
+
+
+########################################################################################################################################
+## Reorganizing for data last 1000 datapoints  
+num_last = 500
+#Ngib 
+#Ngib_data<-c(Master_species_gradient_logger_data$Ngib1,Master_species_gradient_logger_data$Ngib2,Master_species_gradient_logger_data$Ngib3)
+Ngib_data_1000<-vector()
+for (i in 1:3){
+  Ngib_data_1000<-c(Ngib_data_1000,tail(na.omit(Master_species_gradient_logger_data[,i]),n=num_last))
+}
+
+Ngib_data_1000<-data.frame(Ngib_data_1000)
+
+#Than
+Than_data_1000<-vector()
+for (i in 4:9){
+  Than_data_1000<-c(Than_data_1000,tail(na.omit(Master_species_gradient_logger_data[,i]),n=num_last))
+}
+Than_data_1000<-data.frame(Than_data_1000)
+
+#Cwil
+Cwil_data_1000<-vector()
+for (i in 10:15){
+  Cwil_data_1000<-c(Cwil_data_1000,tail(na.omit(Master_species_gradient_logger_data[,i]),n=num_last))
+}
+Cwil_data_1000<-data.frame(Cwil_data_1000)
+
+#Lsq
+Lsq_data_1000<-vector()
+for (i in 16:21){
+  Lsq_data_1000<-c(Lsq_data_1000,tail(na.omit(Master_species_gradient_logger_data[,i]),n=num_last))
+}
+Lsq_data_1000<-data.frame(Lsq_data_1000)
+
+#Ncor
+Ncor_data_1000<-vector()
+for (i in 22:27){
+  Ncor_data_1000<-c(Ncor_data_1000,tail(na.omit(Master_species_gradient_logger_data[,i]),n=num_last))
+}
+Ncor_data_1000<-data.frame(Ncor_data_1000)
+
+#combining all data last 1000 datapoints 
+
+all_species_1000<-vector()
+all_species_1000<- data.frame(Ngib_data_1000,
+                        Than_data_1000,
+                         Cwil_data_1000,
+                         Lsq_data_1000,
+                         Ncor_data_1000)
+
+stack_all_species_1000<-stack(na.omit(all_species_1000))
+################################################################################################################################################################
+#AFGP bearing species vs non afgp bearing
+
+# REMOVE NAs
+stack_all_species_1000<-na.omit(stack_all_species_1000)
+#
+# add new column
+stack_all_species_1000["AFGP_content"]<-NA
+total= length(stack_all_species_1000[1])
+pb <- txtProgressBar(min=1, max=total,style=3)
+for (i in 1:total){
+  if (as.character(stack_all_species_1000[i,2])=="Lsq_data_1000"){
+    stack_all_species_1000[i,3] = as.character("Neg")
+    setTxtProgressBar(pb, i)
+  }
+  else {
+    stack_all_species_1000[i,3]<-as.character("Pos")
+    setTxtProgressBar(pb, i)
+  }
+  
+}
+stack_all_species_1000[,3]<-as.factor(stack_all_species_1000[,3])
+names(stack_all_species_1000)<-c()
+write.table(stack_all_species_1000, "./stack_all_species_1000", sep=",")
+
+# CDF transformation on individual species
+colnames(stack_all_species_1000)<-c("Skip","Temperature","Species","AFGP_content")
+
 
 ##########################################################################################################################################
 # # Distribution of desnity of temperatures per species 
@@ -237,32 +317,7 @@ base2+geom_density(stat="density",adjust = x,na.rm=TRUE,position = pos,alpha = a
  base2+geom_histogram(aes(y=(..count../sum(..count..))*100),na.rm=TRUE, binwidth = 0.2)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
    geom_vline(xintercept = -1.130, color= "blue")+scale_y_continuous(expand = c(0,0)) 
 
-
-################################################################################################################################################################
-#AFGP bearing species vs non afgp bearing
-
-# # REMOVE NAs
-#  stack_all_species<-na.omit(stack_all_species)
-# #
-# # add new column
-#  stack_all_species["AFGP_content"]<-NA
-# 
-#  pb <- txtProgressBar(min=1, max=total,style=3)
-#  for (i in 1:total){
-#    if (as.character(stack_all_species[i,2])=="Lsq_data"){
-#      stack_all_species[i,3]<-as.character("Neg")
-#      setTxtProgressBar(pb, i)
-#    }
-#    else {
-#      stack_all_species[i,3]<-as.character("Pos")
-#      setTxtProgressBar(pb, i)
-#    }
-# 
-#  }
-#  stack_all_species[,3]<-as.factor(stack_all_species[,3])
-#  names(stack_all_species)<-c()
-#  write.table(stack_all_species, "./stack_all_species.csv", sep=",")
-
+ ################################################################################################################################################################
 # Percentage of time spent at a specific temperature 
 base2+geom_histogram(aes(y=(..count../sum(..count..)),fill=AFGP_content),na.rm=TRUE, binwidth = 0.2)+
   xlim(-2, 2)+
@@ -419,7 +474,22 @@ log_Cwil<-log(all_species$Cwil_data)
 log_Lsq<-log(all_species$Lsq_data)
 log_Ncor<-log(all_species$Ncor_data)
 
-oneway.test()
+
+oneway.test(Temperature ~ Species, 
+            data = stack_all_species)
+
+dunnTest(Temperature ~ Species, 
+         data = stack_all_species,
+         method="bonferroni")
+
+oneway.test(Temperature ~ AFGP_content, 
+            data = stack_all_species)
+
+dunnTest(Temperature ~ AFGP_content, 
+         data = stack_all_species,
+         method="bonferroni")
+
+
 # Add 3rd axis showing how temp distribution corresponds with AFGP activity
 # need means for each interval === Lambda
 
@@ -552,26 +622,26 @@ base4
 
 ############################################################################################################################################
 # Kruskal-Wallis Rank Sum Test AFGP Pos to Neg
-
+#data_kw = stack_all_species
+data_kw = stack_all_species_1000
 kruskal.test(Temperature ~ AFGP_content, 
-             data = stack_all_species)
+             data = data_kw)
 
 dunnTest(Temperature ~ AFGP_content, 
-          data = stack_all_species,
-         method="none") 
+          data = data_kw,
+         method="bonferroni") 
 
 ############################################################################################################################################
 # Kruskal-Wallis Rank Sum Test species
 
 kruskal.test(Temperature ~ Species, 
-             data = stack_all_species)
+             data = data_kw)
 
 #Post-hoc test 
 
 dunnTest(Temperature ~ Species, 
-         data = stack_all_species,
+         data = data_kw,
          method="bonferroni") 
-
 ############################################################################################################################################
 ############################################################################################################################################
 # Bootstraping
@@ -579,16 +649,21 @@ dunnTest(Temperature ~ Species,
  
 
 library(boot)
-# function to obtain mean from the data 
+# function to obtain mean from the boot run 
 samplemean <- function(x, d) {
   return(mean(x[d]))
 }
-
-results_lsq <- boot(data=na.omit(all_species$Lsq_data), statistic=samplemean, R=6000)
-results_ncor <- boot(data=na.omit(all_species$Ncor_data), statistic=samplemean, R=1000)
-results_than <- boot(data=na.omit(all_species$Than_data), statistic=samplemean, R=1000)
-results_cwil <- boot(data=na.omit(all_species$Cwil_data), statistic=samplemean, R=1000)
-results_Ngib <- boot(data=na.omit(all_species$Ngib_data), statistic=samplemean, R=1000)
+# function to obtain variance from the boot run 
+samplevar <- function(x, d) {
+  return(var(x[d]))
+}
+statfuntion = samplemean
+r_val = 5000
+results_lsq <- boot(data=na.omit(all_species$Lsq_data), statistic=statfuntion, R=r_val)
+results_ncor <- boot(data=na.omit(all_species$Ncor_data), statistic=statfuntion, R=r_val)
+results_than <- boot(data=na.omit(all_species$Than_data), statistic=statfuntion, R=r_val)
+results_cwil <- boot(data=na.omit(all_species$Cwil_data), statistic=statfuntion, R=r_val)
+results_Ngib <- boot(data=na.omit(all_species$Ngib_data), statistic=statfuntion, R=r_val)
 
 
 # view results
@@ -599,10 +674,53 @@ results_cwil
 results_Ngib
 
 plot(results_lsq)
+plot(results_ncor)
+plot(results_than)
+plot(results_cwil)
+plot(results_Ngib)
 
 # get 95% confidence interval 
-boot.ci(results_lsq, type="all")
+results_lsq_ci <- boot.ci(results_lsq, type="basic")
+results_ncor_ci <- boot.ci(results_ncor, type="basic")
+results_than_ci <- boot.ci(results_than, type="basic")
+results_cwil_ci <-boot.ci(results_cwil, type="basic")
+results_Ngib_ci <-boot.ci(results_Ngib, type="basic")
 
+results_lsq_ci
+results_ncor_ci
+results_than_ci
+results_cwil_ci
+results_Ngib_ci
+
+boot_strap_stats = c(results_lsq_ci$t0,
+  results_ncor_ci$t0,
+  results_than_ci$t0,
+  results_cwil_ci$t0,
+  results_Ngib_ci$t0)
+boot_strap_ci_Low = c(results_lsq_ci$basic[4],
+                  results_ncor_ci$basic[4],
+                  results_than_ci$basic[4],
+                  results_cwil_ci$basic[4],
+                  results_Ngib_ci$basic[4])
+
+boot_strap_ci_high = c(results_lsq_ci$basic[5],
+                      results_ncor_ci$basic[5],
+                      results_than_ci$basic[5],
+                      results_cwil_ci$basic[5],
+                      results_Ngib_ci$basic[5])
+
+boot_strap_rep = c(results_lsq_ci$R,
+                       results_ncor_ci$R,
+                       results_than_ci$R,
+                       results_cwil_ci$R,
+                       results_Ngib_ci$R)
+
+boot_data_var = data.frame(c("Lsq","Ncor","Than","Cwil","Ngib"),boot_strap_means,boot_strap_ci_Low, boot_strap_ci_high,boot_strap_rep)
+
+colnames(boot_data_var)<-c("Species","Boot_mean","Boot_CI_low","Boot_CI_high","Boot_reps")
+boot_data_var
+
+boot_data
 # This is not how you would do a simulation test (not a bootstrap test here). 
 # What you want to do mix all the data together and then randomly redivide into two new groups find 
 # the mean of each group take the difference and plot it. Repeat lots of times, 10,000 for instance. 
@@ -612,4 +730,3 @@ boot.ci(results_lsq, type="all")
 # about the data than this test.
 
 ############################################################################################################################################
-kruskal.test(values~ind , data=stack_all_species)
