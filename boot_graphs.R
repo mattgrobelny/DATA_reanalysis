@@ -47,12 +47,13 @@ boot_graph_base +theme_bw()+
   ggtitle(paste("Boot Replicates:",boot_data_all_data[1,5]))
 
 boot_graph_base<-ggplot(data= all_boot_data_xy, aes(y=Temp_Mean ,x= Species, fill=Variance),fill=brewer.pal(5,"Set1"))
-boot_graph_base +theme_bw()+
+boot_bar_out =boot_graph_base +theme_bw()+
   geom_bar(stat = "identity")+
   geom_hline(yintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
   geom_hline(yintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
   ylab(parse(text=paste("Temperature (C","^o",")")))+
   ggtitle(paste("Boot Replicates:",boot_data_all_data[1,5]))
+ggsave(boot_bar_out, file="boot_bar_all_data.png", dpi = 500)
 
 ## Graph 1000 boot data mean vs variance 
 
@@ -80,9 +81,10 @@ boot_graph_base +theme_bw()+
 # #######
 # #bargraph
 boot_graph_base<-ggplot(data= all_boot_data_xy, aes(y=Temp_Mean ,x= Species, fill=Variance),fill=brewer.pal(5,"Set1"))
-boot_graph_base +theme_bw()+
+boot_bar_out= boot_graph_base +theme_bw()+
   geom_bar(stat = "identity")+
   geom_hline(yintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
   geom_hline(yintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
   ylab(parse(text=paste("Temperature (C","^o",")")))+
   ggtitle(paste("Boot Replicates:",boot_data_all_data[1,5]))
+ggsave(boot_bar_out, file="boot_bar_last1000.png", dpi = 500)

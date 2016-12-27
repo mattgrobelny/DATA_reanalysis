@@ -11,6 +11,9 @@ library(FSA)
 library(dunn.test)
 library(lattice)
 
+setwd("~/Documents/OneDrive/Antarctica Files/Data/Gradient Project/Hobodata/Large Tank/DATA_reanalysis")
+
+
 ####################################################################################################
 # Kolmogorov-Smirnov Tests
 # distributions considered under the null hypothesis are continuous distributions but are otherwise unrestricted.
@@ -32,10 +35,10 @@ AFGP_Pos_data_no_Ncor<-data.frame(AFGP_Pos=stacked_no_ncor)
 
 ## Test for normality
 #shapiro.test(AFGP_Pos_data$AFGP_Pos) # reject null (not normal distribution)
-qqnorm(AFGP_Pos_data$AFGP_Pos) # does not look normal (values do not fall on a straight line)
+#qqnorm(AFGP_Pos_data$AFGP_Pos) # does not look normal (values do not fall on a straight line)
 
 #shapiro.test(AFGP_Neg_data$AFGP_Neg) # reject null (not normal distribution)
-qqnorm(AFGP_Neg_data$AFGP_Neg) # does not look normal (values do not fall on a straight line)
+#qqnorm(AFGP_Neg_data$AFGP_Neg) # does not look normal (values do not fall on a straight line)
 
 ## Plot CDFs 
 # An empirical cumulative distribution function (CDF) is a non-parametric estimator of the underlying 
@@ -46,22 +49,22 @@ qqnorm(AFGP_Neg_data$AFGP_Neg) # does not look normal (values do not fall on a s
 AFGP_Pos.ecdf<-ecdf(AFGP_Pos_data$AFGP_Pos)
 AFGP_Neg.ecdf<-ecdf(AFGP_Neg_data$AFGP_Neg)
 
-## Plot individual CDF for AFGP Pos vs Neg
-plot(AFGP_Pos.ecdf,
-     xlab = parse(text=paste("Temperature (C","^o",")")), 
-     ylab = '', 
-     main = 'CDF of AFGP Positive Species Temperature Distribution'
-)
-mtext(text = expression(hat(F)[n](x)), side = 2, line = 2.5)
-
-plot(AFGP_Neg.ecdf,
-     xlab = parse(text=paste("Temperature (C","^o",")")), 
-     ylab = '', 
-     main = 'CDF of AFGP Negative Species Temperature Distribution'
-)
-mtext(text = expression(hat(F)[n](x)), side = 2, line = 2.5)
-
-############################################################################################################
+# ## Plot individual CDF for AFGP Pos vs Neg
+# plot(AFGP_Pos.ecdf,
+#      xlab = parse(text=paste("Temperature (C","^o",")")), 
+#      ylab = '', 
+#      main = 'CDF of AFGP Positive Species Temperature Distribution'
+# )
+# mtext(text = expression(hat(F)[n](x)), side = 2, line = 2.5)
+# 
+# plot(AFGP_Neg.ecdf,
+#      xlab = parse(text=paste("Temperature (C","^o",")")), 
+#      ylab = '', 
+#      main = 'CDF of AFGP Negative Species Temperature Distribution'
+# )
+# mtext(text = expression(hat(F)[n](x)), side = 2, line = 2.5)
+# 
+# ############################################################################################################
 ## Kolmogorov-Smirnov Tests
 # The KS-test uses the maximum vertical deviation between the two curves as the statistic D.
 
@@ -131,6 +134,7 @@ no_Nor_AFGP_CDF <- ggplot(stacked_no_ncor, aes(x=stacked_no_ncor[,1],colour = AF
   theme_bw()
 
 no_Nor_AFGP_CDF
+ggsave(no_Nor_AFGP_CDF, file="CDF_AFGP_pos_v_neg_no_Ncor.png", dpi = 500)
 
 with_Nor_AFGP_CDF <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = AFGP_content))+
   
@@ -145,6 +149,7 @@ with_Nor_AFGP_CDF <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colou
   theme_bw()
 
 with_Nor_AFGP_CDF
+ggsave(with_Nor_AFGP_CDF, file="CDF_AFGP_pos_v_neg_w_Ncor.png", dpi = 500)
 
 #fix fonts and I think this analysis is good.
 
@@ -166,5 +171,5 @@ base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = Species)
 
 base4
 
-
+ggsave(base4, file="CDF_all_species.png", dpi = 500)
 

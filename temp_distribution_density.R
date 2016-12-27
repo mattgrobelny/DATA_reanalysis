@@ -77,12 +77,14 @@ col="Set1"
 base2 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],fill = stack_all_species[,2]))
 # finish_graph<-xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
 #   geom_vline(xintercept = -1.130, color= "blue")
-base2+geom_density(stat="density",adjust = x,na.rm=TRUE,position = pos,alpha = a)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+
+denisty_plot= base2+geom_density(stat="density",adjust = x,na.rm=TRUE,position = pos,alpha = a)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+
   geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
   geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
   scale_y_continuous(expand = c(0,0)) 
+ggsave(denisty_plot, file="denisty_plot_all_species.png", dpi = 500)
 
 # HARD TO UNDERSTAND GRAPH NOT HELPFUL
 # #Histogram 
-base2+geom_histogram(aes(y=(..count../sum(..count..))*100),na.rm=TRUE, binwidth = 0.2)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
+stack_histogram = base2+geom_histogram(aes(y=..density..),na.rm=TRUE, binwidth = 0.2)+xlim(-2, 2)+scale_fill_brewer(palette=col)+theme_bw()+geom_vline(xintercept = 1.490, color="red")+
   geom_vline(xintercept = -1.130, color= "blue")+scale_y_continuous(expand = c(0,0)) 
+ggsave(stack_histogram, file="stack_histogram_all_species.png", dpi = 500)
