@@ -10,6 +10,8 @@ library(MASS)
 library(FSA)
 library(dunn.test)
 library(lattice)
+library(gridExtra)
+library(grid)
 
 
 # Import data set 
@@ -85,6 +87,13 @@ plot(results_Ngib)
 title<-paste(names(data)[1],"of",as.character(substitute(statfuntion)),"Btrep:",r_val)
 title(sub=title)
 
+# data=data.frame(results_lsq$t,results_ncor$t,results_than$t,results_cwil$t,results_Ngib$t)
+# for(i in 1:5){
+# base_boot <- ggplot(data, aes(x=data[,i]))
+# paste("g",i,sep='')=base_boot + geom_histogram(aes(y = ..density..),binwidth =0.001) +theme_bw()+xlim(-1, 1)
+# }
+# grid.arrange( g1, g2,g3,g4,g5, ncol=1)
+
 # get 95% confidence interval 
 results_lsq_ci <- boot.ci(results_lsq, type="basic")
 results_ncor_ci <- boot.ci(results_ncor, type="basic")
@@ -129,7 +138,7 @@ return(boot_data)
 ############################################################################################################################################
 
 # Run bootstrap functions on all data  
-r_val = 2000
+r_val = 3000
 boot_data_all_data = run_boot_strap(all_species, samplemean, r_val)
 boot_data_var_all_data = run_boot_strap(all_species,samplevar, r_val)
 
@@ -137,7 +146,7 @@ boot_data_all_data
 boot_data_var_all_data
 
 # Run bootstrap fucntion on last 500 data points 
-r_val = 2000
+r_val = 3000
 boot_data_last_1000 = run_boot_strap(all_species_1000, samplemean, r_val)
 boot_data_var_last_1000  = run_boot_strap(all_species_1000,samplevar, r_val)
 

@@ -46,12 +46,20 @@ boot_graph_base +theme_bw()+
   xlab(parse(text=paste("Temperature (C","^o",")")))+
   ggtitle(paste("Boot Replicates:",boot_data_all_data[1,5]))
 
+boot_graph_base<-ggplot(data= all_boot_data_xy, aes(y=Temp_Mean ,x= Species, fill=Variance),fill=brewer.pal(5,"Set1"))
+boot_graph_base +theme_bw()+
+  geom_bar(stat = "identity")+
+  geom_hline(yintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_hline(yintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  ylab(parse(text=paste("Temperature (C","^o",")")))+
+  ggtitle(paste("Boot Replicates:",boot_data_all_data[1,5]))
+
 ## Graph 1000 boot data mean vs variance 
 
 boot_data_last_1000
 boot_data_var_last_1000
 
-all_boot_data_xy =data.frame(as.factor(boot_data_last_1000[,1]),boot_data_last_1000[,2], boot_data_var_last_1000[,2])
+all_boot_data_xy =data.frame(as.factor(boot_data_last_1000[,1]),boot_data_last_1000[,2], boot_data_last_1000[,2])
 colnames(all_boot_data_xy) <- c('Species', 'Temp_Mean', 'Variance')
 
 mean_limits <- aes(xmax = boot_data_all_data[,4] , xmin=boot_data_all_data[,3])
@@ -67,4 +75,14 @@ boot_graph_base +theme_bw()+
   geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
   geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
   xlab(parse(text=paste("Temperature (C","^o",")")))+
-  ggtitle(paste("Boot Replicates:",boot_data_var_last_1000[1,5]))
+  ggtitle(paste("Boot Replicates:",boot_data_all_data[1,5]))
+
+# #######
+# #bargraph
+boot_graph_base<-ggplot(data= all_boot_data_xy, aes(y=Temp_Mean ,x= Species, fill=Variance),fill=brewer.pal(5,"Set1"))
+boot_graph_base +theme_bw()+
+  geom_bar(stat = "identity")+
+  geom_hline(yintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_hline(yintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  ylab(parse(text=paste("Temperature (C","^o",")")))+
+  ggtitle(paste("Boot Replicates:",boot_data_all_data[1,5]))

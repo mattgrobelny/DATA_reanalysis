@@ -16,11 +16,19 @@ library(lattice)
 # distributions considered under the null hypothesis are continuous distributions but are otherwise unrestricted.
 # non-parametric and distribution free
 
+# No lsq and no ncor
+all_species_no_Lsq_Ncor<-data.frame(c(na.omit(all_species[,1]),na.omit(all_species[,2]),na.omit(all_species[,3])))
+colnames(all_species_no_Lsq_Ncor)<-c("Temp")
 
 # organize temp data into AFGP_pos and AFGP_neg
 AFGP_Pos_data<-data.frame(AFGP_Pos=all_species_no_Lsq_df)
 colnames(AFGP_Pos_data)<-c("AFGP_Pos")
 AFGP_Neg_data<-data.frame(AFGP_Neg=all_species$Lsq_data)
+
+#no Ncor
+stacked_no_ncor <- stack_all_species[which(stack_all_species$Species !='Ncor_data'),1:3]
+
+AFGP_Pos_data_no_Ncor<-data.frame(AFGP_Pos=stacked_no_ncor)
 
 ## Test for normality
 #shapiro.test(AFGP_Pos_data$AFGP_Pos) # reject null (not normal distribution)
@@ -59,6 +67,11 @@ mtext(text = expression(hat(F)[n](x)), side = 2, line = 2.5)
 
 KS_Test_AFGP_neg_vs_pos<-ks.test(AFGP_Pos_data$AFGP_Pos,AFGP_Neg_data$AFGP_Neg)
 KS_Test_AFGP_neg_vs_pos
+
+
+# redo test excluding Ncor as it may be a cold outlier
+KS_Test_AFGP_neg_vs_pos_NO_NCOR<-ks.test(AFGP_Pos_data_no_Ncor$AFGP_Pos,AFGP_Neg_data$AFGP_Neg)
+KS_Test_AFGP_neg_vs_pos_NO_NCOR
 ######## From KS test ---> Significant difference between the two distributions 
 
 ####
@@ -102,8 +115,10 @@ KS_Ncor_Lsq # sig
 # Than                *
 
 ############################################################################################################
+# select all data no Ncor 
+stacked_no_ncor <- stack_all_species[which(stack_all_species$Species !='Ncor_data'),1:3]
 
-base3 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = AFGP_content))+
+no_Nor_AFGP_CDF <- ggplot(stacked_no_ncor, aes(x=stacked_no_ncor[,1],colour = AFGP_content))+
   
   stat_ecdf(na.rm=TRUE)+
   scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
@@ -115,7 +130,21 @@ base3 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = AFGP_con
   scale_y_continuous(expand = c(0,0)) +
   theme_bw()
 
-base3
+no_Nor_AFGP_CDF
+
+with_Nor_AFGP_CDF <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = AFGP_content))+
+  
+  stat_ecdf(na.rm=TRUE)+
+  scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
+  xlim(-2, 2)+
+  ylab("Cumulative Probablility")+
+  xlab(parse(text=paste("Temperature (C","^o",")")))+
+  geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  scale_y_continuous(expand = c(0,0)) +
+  theme_bw()
+
+with_Nor_AFGP_CDF
 
 #fix fonts and I think this analysis is good.
 
