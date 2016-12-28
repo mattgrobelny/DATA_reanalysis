@@ -39,7 +39,7 @@ colnames(stack_time_0) <- c("Temp","Species","TimeStage")
 stack_time_end <-stack(time_end)
 stack_time_end[,3] <- "TEnd"
 colnames(stack_time_end) <- c("Temp","Species","TimeStage")
-stack_time_end
+
 # put together into one long list
 time_0_time_end_stack <-rbind(stack_time_0,stack_time_end)
 summary(time_0_time_end_stack)
@@ -56,27 +56,32 @@ time_0_time_end_stack$TimeStage<-as.factor(time_0_time_end_stack$TimeStage)
 time_0_time_end_stack$Species<-as.factor(time_0_time_end_stack$Species)
 
 summary(time_0_time_end_stack)
+levels(time_0_time_end_stack$Species) <- c("C.wilsoni","L.squamifrons", "N.coriiceps", "T.hansoni")
+
 # NA are from empty rows from Ngib
 #Are main effects or interaction effects present in the independent variables?
 
 # Lsq t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="Lsquam"),1:3], pair=TRUE)
+wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="L.squamifrons"),1:3], alternative = "two.sided")
 
 # Ncor t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="Ncor"),1:3], pair=TRUE)
+wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="N.coriiceps"),1:3], alternative = "two.sided")
 
 # Than t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="Than"),1:3], pair=TRUE)
+wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="T.hansoni"),1:3], alternative = "two.sided")
 
 # Cwil t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="Cwil"),1:3], pair=TRUE)
+wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="C.wilsoni"),1:3], alternative = "two.sided")
 
-# Ngib t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="Ngib"),1:3], pair=TRUE)
-
-t_End_Temp_V_species = kruskal_test(Temp ~ Species, 
+#use kruskal_test for signficance using a sim permutation data set 
+# Are the median temps which the fish were found at, at the end of the expereiment different?
+ks_test = kruskal_test(Temp ~ Species, 
              data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],conf.int =TRUE,
-             distribution = approximate(B = 10000))
+             distribution = approximate(B = 100000))
+# P-value ≤ α: The differences between some of the medians are statistically significant
 
+
+# How are the median temperatures different between fish, at the end of the expereiment?
 dunnTest(Temp ~ Species, 
-         data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3])
+         data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],
+         two.sided= TRUE)
