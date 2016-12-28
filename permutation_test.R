@@ -28,5 +28,5 @@ independence_test(Temperature ~ AFGP_content,
 
 
 independence_test(Temperature ~ Species, 
-             data = data_kw, distribution = approximate(B = 2000000))
+             data = data_kw, distribution = approximate(B = 20000))
 
