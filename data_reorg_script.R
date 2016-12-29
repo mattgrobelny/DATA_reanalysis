@@ -126,8 +126,8 @@ data["AFGP_content"]<-NA
 total= length(data[,1])
 pb <- txtProgressBar(min=1, max=total,style=3)
 for (i in 1:total){
-  if (as.character(data[i,2])==as.character(Lsq_data_name)){
-    data[i,3] = as.character("Neg")
+  if (data[i,2]==as.character(Lsq_data_name)){
+    data[i,4] = as.character("Neg")
     setTxtProgressBar(pb, i)
   }
   else {
@@ -152,4 +152,8 @@ return(data)
 
 # run me to add afgp pos neg column to dataset: /// Takes a long time ///
 # stack_all_species = add_afgp_cat(stack_all_species,Lsq_data)
+
+# run me to add afgp pos neg column to dataset: /// Takes a long time ///
+time_0_time_end_stack_w_afgp = add_afgp_cat(time_0_time_end_stack,'L.squamifrons')
+summary(time_0_time_end_stack_w_afgp)
 

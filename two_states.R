@@ -22,12 +22,13 @@ setwd("~/Documents/OneDrive/Antarctica Files/Data/Gradient Project/Hobodata/Larg
 # data reorgnization
 
 # Data for time start
-time_0 = data.frame(Master_species_gradient_logger_data[1:1000,4:27])
+number_of_start_end_dtp = 1500
+time_0 = data.frame(Master_species_gradient_logger_data[1:number_of_start_end_dtp,4:27])
 colnames(time_0) <- c(colnames(Master_species_gradient_logger_data)[4:27])
 # Data for time end
-time_end<-data.frame(c(1:1000))
+time_end<-data.frame(c(1:number_of_start_end_dtp))
 for (i in 4:27){
-  time_end[,i-3]<-tail(na.omit(Master_species_gradient_logger_data[,i]),n=1000)
+  time_end[,i-3]<-tail(na.omit(Master_species_gradient_logger_data[,i]),n=number_of_start_end_dtp)
 }
 colnames(time_end) <- c(colnames(Master_species_gradient_logger_data)[4:27])
 
@@ -62,26 +63,56 @@ levels(time_0_time_end_stack$Species) <- c("C.wilsoni","L.squamifrons", "N.corii
 #Are main effects or interaction effects present in the independent variables?
 
 # Lsq t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="L.squamifrons"),1:3], alternative = "two.sided")
+wilcox.test(Temp ~ TimeStage, 
+            data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="L.squamifrons"),1:3],
+            alternative = "two.sided",
+            conf.int =TRUE)
 
 # Ncor t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="N.coriiceps"),1:3], alternative = "two.sided")
+wilcox.test(Temp ~ TimeStage, 
+            data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="N.coriiceps"),1:3],
+            alternative = "two.sided",
+            conf.int =TRUE)
 
 # Than t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="T.hansoni"),1:3], alternative = "two.sided")
+wilcox.test(Temp ~ TimeStage, 
+            data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="T.hansoni"),1:3],
+            alternative = "two.sided",
+            conf.int =TRUE)
+
 
 # Cwil t0 vs t_end
-wilcox.test(Temp ~ TimeStage, data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="C.wilsoni"),1:3], alternative = "two.sided")
+wilcox.test(Temp ~ TimeStage, 
+            data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="C.wilsoni"),1:3], 
+            alternative = "two.sided",
+            conf.int =TRUE)
+
 
 #use kruskal_test for signficance using a sim permutation data set 
-# Are the median temps which the fish were found at, at the end of the expereiment different?
+# Are the distriubtions of median temps which the fish were found at, at the end of the expereiment different?
 ks_test = kruskal_test(Temp ~ Species, 
              data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],conf.int =TRUE,
-             distribution = approximate(B = 100000))
+             distribution = approximate(B = 10000))
+ks_test
 # P-value ≤ α: The differences between some of the medians are statistically significant
 
 
-# How are the median temperatures different between fish, at the end of the expereiment?
+# How are the median temperatures distributions different between fish species, at the end of the expereiment?
 dunnTest(Temp ~ Species, 
          data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],
-         two.sided= TRUE)
+         two.sided= TRUE, method="bonferroni")
+
+# pairwise test of end values 
+# 
+stack_time_end2 = stack_time_end
+stack_time_end2$Species <- sub("Ncor[0-9]", "Ncor", stack_time_end2$Species, perl=TRUE)
+stack_time_end2$Species <- sub("Cwil[0-9]", "Cwil", stack_time_end2$Species, perl=TRUE)
+stack_time_end2$Species <- sub("Lsquam[0-9]", "Lsquam", stack_time_end2$Species, perl=TRUE)
+stack_time_end2$Species <- sub("Than[0-9]", "Than", stack_time_end2$Species, perl=TRUE)
+head(stack_time_end2)
+pairwise.wilcox.test(stack_time_end2$Temp, stack_time_end2$Species, p.adjust.method="holm")
+
+
+
+
+

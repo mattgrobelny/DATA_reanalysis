@@ -26,12 +26,17 @@ colnames(all_species_no_Lsq_Ncor)<-c("Temp")
 # organize temp data into AFGP_pos and AFGP_neg
 AFGP_Pos_data<-data.frame(AFGP_Pos=all_species_no_Lsq_df)
 colnames(AFGP_Pos_data)<-c("AFGP_Pos")
-AFGP_Neg_data<-data.frame(AFGP_Neg=all_species$Lsq_data)
+AFGP_Neg_data<-data.frame(AFGP_Neg=na.omit(all_species$Lsq_data))
 
 #no Ncor
 stacked_no_ncor <- stack_all_species[which(stack_all_species$Species !='Ncor_data'),1:3]
 
 AFGP_Pos_data_no_Ncor<-data.frame(AFGP_Pos=stacked_no_ncor)
+
+#no Ngib
+stacked_no_Ngib<- stack_all_species[which(stack_all_species$Species !='Ngib_data' & stack_all_species$Species !='Lsq_data'),1]
+
+AFGP_Pos_stacked_no_Ngib<-data.frame(AFGP_Pos=stacked_no_Ngib)
 
 ## Test for normality
 #shapiro.test(AFGP_Pos_data$AFGP_Pos) # reject null (not normal distribution)
@@ -68,16 +73,20 @@ AFGP_Neg.ecdf<-ecdf(AFGP_Neg_data$AFGP_Neg)
 ## Kolmogorov-Smirnov Tests
 # The KS-test uses the maximum vertical deviation between the two curves as the statistic D.
 
-KS_Test_AFGP_neg_vs_pos<-ks.test(AFGP_Pos_data$AFGP_Pos,AFGP_Neg_data$AFGP_Neg)
+KS_Test_AFGP_neg_vs_pos<-ks.test(AFGP_Pos_data$AFGP_Pos,AFGP_Neg_data$AFGP_Neg,alternative = "two.sided")
 KS_Test_AFGP_neg_vs_pos
 
 
 # redo test excluding Ncor as it may be a cold outlier
-KS_Test_AFGP_neg_vs_pos_NO_NCOR<-ks.test(AFGP_Pos_data_no_Ncor$AFGP_Pos,AFGP_Neg_data$AFGP_Neg)
+KS_Test_AFGP_neg_vs_pos_NO_NCOR<-ks.test(AFGP_Pos_data_no_Ncor$AFGP_Pos,AFGP_Neg_data$AFGP_Neg )
 KS_Test_AFGP_neg_vs_pos_NO_NCOR
 ######## From KS test ---> Significant difference between the two distributions 
+stack_all_species[which(stack_all_species$Species!="Ngib_data"),1:3]
 
-####
+# redo test excluding Ngib as sample size is too small to be used 
+KS_Test_AFGP_neg_vs_pos_NO_Ngib<-ks.test(as.numeric(AFGP_Pos_stacked_no_Ngib$AFGP_Pos),as.numeric(AFGP_Neg_data$AFGP_Neg)) 
+KS_Test_AFGP_neg_vs_pos_NO_Ngib
+
 
 ##############
 # All vs all KS- test
@@ -172,4 +181,39 @@ base4 <- ggplot(stack_all_species, aes(x=stack_all_species[,1],colour = Species)
 base4
 
 ggsave(base4, file="CDF_all_species.png", dpi = 500)
+############################################################################################################################################
 
+colnames(stack_all_species)<-c("Temperature","Species","AFGP_content")
+
+base4_noNgib <- ggplot(stack_all_species[which(stack_all_species$Species!="Ngib_data"),1:3], 
+                aes(x=stack_all_species[which(stack_all_species$Species!="Ngib_data"),1],colour = Species),color=brewer.pal(4,"Set1"))+
+  stat_ecdf(na.rm=TRUE)+
+  #scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
+  xlim(-2, 2)+
+  ylab("Cumulative Probablility")+
+  xlab(parse(text=paste("Temperature (C","^o",")")))+
+  geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  scale_y_continuous(expand = c(0,0))+
+  theme_bw()
+
+base4_noNgib
+
+ggsave(base4_noNgib, file="CDF_all_species_noNgib.png", dpi = 500)
+
+############################################################################################################################################
+
+with_Nor_NO_Ngib_AFGP_CDF<- ggplot(stack_all_species[which(stack_all_species$Species!="Ngib_data"),1:3], 
+                       aes(x=stack_all_species[which(stack_all_species$Species!="Ngib_data"),1],colour = AFGP_content))+
+  stat_ecdf(na.rm=TRUE)+
+  scale_color_manual(values=c(rgb(224,29,27,maxColorValue=255),rgb(48,115,175,maxColorValue=255)))+
+  xlim(-2, 2)+
+  ylab("Cumulative Probablility")+
+  xlab(parse(text=paste("Temperature (C","^o",")")))+
+  geom_vline(xintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_vline(xintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
+  scale_y_continuous(expand = c(0,0)) +
+  theme_bw()
+
+with_Nor_NO_Ngib_AFGP_CDF
+ggsave(with_Nor_NO_Ngib_AFGP_CDF, file="with_Nor_NO_Ngib_AFGP_CDF.png", dpi = 500)

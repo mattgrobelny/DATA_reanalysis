@@ -12,7 +12,7 @@ library(dunn.test)
 library(lattice)
 library(gridExtra)
 library(grid)
-
+library(boot)
 
 # Import data set 
 #Master_species_gradient_logger_data <- read.csv("~/Documents/OneDrive/Antarctica Files/Data/Gradient Project/Hobodata/Large Tank/DATA_reanalysis/Master_species_gradient_logger_data.csv")
@@ -32,12 +32,16 @@ setwd("~/Documents/OneDrive/Antarctica Files/Data/Gradient Project/Hobodata/Larg
 # statfuntion = variance // collect variance values from each bootrun
 # function to obtain mean from the boot run 
 samplemean <- function(x, d) {
-  return(mean(x[d]))
+  mean<- mean(x[d])
+  var <- var(x[d])
+  c(var,mean)
 }
 # function to obtain variance from the boot run 
 samplevar <- function(x, d) {
   return(var(x[d]))
 }
+
+results_lsq <- boot(data=na.omit(all_species_1000$Lsq_data), statistic=samplemean, R=500)
 
 run_boot_strap <- function(data,statfuntion,r_val){
 
