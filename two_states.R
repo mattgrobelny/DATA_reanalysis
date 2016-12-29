@@ -104,13 +104,13 @@ dunnTest(Temp ~ Species,
 
 # pairwise test of end values 
 # 
-stack_time_end2 = stack_time_end
+stack_time_end2 = stack_time_0
 stack_time_end2$Species <- sub("Ncor[0-9]", "Ncor", stack_time_end2$Species, perl=TRUE)
 stack_time_end2$Species <- sub("Cwil[0-9]", "Cwil", stack_time_end2$Species, perl=TRUE)
 stack_time_end2$Species <- sub("Lsquam[0-9]", "Lsquam", stack_time_end2$Species, perl=TRUE)
 stack_time_end2$Species <- sub("Than[0-9]", "Than", stack_time_end2$Species, perl=TRUE)
 head(stack_time_end2)
-pairwise.wilcox.test(stack_time_end2$Temp, stack_time_end2$Species, p.adjust.method="holm")
+pairwise.wilcox.test(stack_time_end2$Temp, stack_time_end2$Species, p.adjust.method="bonf")
 
 
 
