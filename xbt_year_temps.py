@@ -1,7 +1,8 @@
 
 import sys
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import griddata
 
 
 def in_circle(center_x, center_y, radius, x, y):
@@ -40,7 +41,7 @@ total_line = sum(1 for line in open(file_in))
 
 count = 0
 for line in open(file_in, "r"):
-    #progress(count, total_line, suffix='')
+    # progress(count, total_line, suffix='')
     count += 1
     line = line.strip('\n')
     line = line.replace(' ', '')
@@ -69,7 +70,7 @@ for line in open(file_in, "r"):
     elif line[1][0:-1].isdigit():
         # print line[1]
         if int(line[1][0:-1]) in depth_range:
-            print line[4]
+            # print line[4]
             try:
                 depth_temp[int(line[1][0:-1])] = float(line[4])
                 continue
@@ -106,7 +107,7 @@ print "done"
 
 # print data_dic.values()[1:10]
 
-print data_dic['1'].items()[1:5]
+# print data_dic['1'].items()[1:5]
 
 
 # from the docs:
@@ -118,19 +119,47 @@ print data_dic['1'].items()[1:5]
 #
 # http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.imshow
 
-methods = [None, 'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
-           'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
-           'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
+# methods = [None, 'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
+#            'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
+#            'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
 
-grid = np.random.rand(4, 4)
+# Convert from pandas dataframes to numpy arrays
+X, Y, Z = np.array([]), np.array([]), np.array([])
 
-fig, axes = plt.subplots(3, 6, figsize=(12, 6),
-                         subplot_kw={'xticks': [], 'yticks': []})
+for month_key in sorted(data_dic.keys()):
+    for depth_key in sorted(data_dic[month_key].keys()):
+        X = np.append(X, int(month_key))
+        Y = np.append(Y, int(depth_key))
+        Z = np.append(Z, np.average(data_dic[month_key][depth_key]))
 
-fig.subplots_adjust(hspace=0.3, wspace=0.05)
+# for i in range(10):
+#     print X[i]
+#
+# for i in range(10):
+#     print Y[i]
+#
+# for i in range(10):
+#     print Z[i]
 
-for ax, interp_method in zip(axes.flat, methods):
-    ax.imshow(grid, interpolation=interp_method)
-    ax.set_title(interp_method)
 
+# create x-y points to be used in heatmap
+xi = np.linspace(X.min(), X.max(), 100)
+yi = np.linspace(Y.min(), Y.max(), 100)
+
+# Z is a matrix of x-y values
+zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='cubic')
+
+# I control the range of my colorbar by removing data
+# outside of my range of interest
+zmin = -3
+zmax = 5
+zi[(zi < zmin) | (zi > zmax)] = None
+
+# Create the contour plot
+CS = plt.contourf(xi, yi, zi, 15, cmap=plt.cm.rainbow,
+                  vmax=zmax, vmin=zmin)
+ax = plt.gca()
+ax.invert_yaxis()
+ax.grid(True)
+plt.colorbar()
 plt.show()
