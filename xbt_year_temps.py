@@ -1,32 +1,7 @@
 
-#
-# CAST                        		2102812	WOD Unique Cast Number	WOD code
-# NODC Cruise ID              		US-48959
-# Originators Station ID      		               			alpha
-# Originators Cruise ID
-# Latitude                    		-62.13	decimal degrees
-# Longitude                   		-60.62	decimal degrees
-# Year                        		1969
-# Month                       		5
-# Day                         		28
-# Time                        		0.5	decimal hours (UT)
-# METADATA
-# Country                     		             US	NODC code	UNITED STATES
-# Accession Number            		7500750	NODC code
-# Platform                    		2508	OCL code	HERO
-# Institute                   		413	NODC code	US DOC NOAA NMFS (WASH; D. C.)
-# probe_type                  		2	OCL_code	XBT
-# Calibration temperature     		16.5	degrees Celsius
-# Digitization method         		2	NODC code 0612	A-D CONVERSION FROM ORIGINAL
-# Digitization interval       		1	NODC code 0613	FIXED INTERVAL LE 0.1 METER AND LE 0.1 DEG C
-# Data treatment and storage m		24	NODC code 0614	DUAL DIGITIZATION AND AVERAGING; COMPRESSION; FIT WITHIN 0.2 DEG C
-# systematic_fix              		5	WOD code	Levitus et al.; 2009 applied (XBT/MBT)
-# Database origin             		1	WOD code	NODC archive (1992)
-# Instrument       	Temperature	2	WOD code	XBT: TYPE UNKNOWN
-# VARIABLES 	Depth     	F	O	Temperatur	F	O
-# UNITS     	m         	 	 	degrees C
-# Prof-Flag 	          	0	 	          	0
-# 1	0	0	 	-1.65	0
+import sys
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def in_circle(center_x, center_y, radius, x, y):
@@ -44,7 +19,7 @@ def progress(count, total, suffix=''):
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', suffix))
     sys.stdout.flush()
 
-file_in = ""
+file_in = "./WOD.27428.XBT.csv"
 
 Latitude = 0
 Longitude = 0
@@ -53,50 +28,64 @@ Year = []
 Month = 0
 Day = 0
 depth_temp = {}
-depth_range = range(0, 2000, 5)
+depth_range = range(0, 2500, 5)
 
-# location ={'Bismark' : [-64 52.45801, -63 39.5166]
-# }
+location = {'Bismark': [-64.866794, -63.650144]
+            }
 radius = 0.5
 
 data_dic = {}
 
-total_line =
+total_line = sum(1 for line in open(file_in))
+
 count = 0
 for line in open(file_in, "r"):
-    progress(count, total_line, suffix='')
+    #progress(count, total_line, suffix='')
     count += 1
     line = line.strip('\n')
-    line = line.split('\t')
+    line = line.replace(' ', '')
+    line = line.split(',')
+    # print line
     if line[0] == 'Latitude':
-        Latitude = line[1]
+        Latitude = line[2]
         continue
 
     elif line[0] == 'Longitude':
-        Longitude = line[1]
+        Longitude = line[2]
         continue
 
     elif line[0] == 'Year':
-        Year = line[1]
+        Year = line[2]
         continue
 
     elif line[0] == 'Month':
-        Month = line[1]
+        Month = line[2]
         continue
 
     elif line[0] == 'Day':
-        Day = line[1]
+        Day = line[2]
         continue
 
-    elif line[2] in depth_range:
-        depth_temp[line[2]] = data_dic.get(line[5], default=[])
-        continue
+    elif line[1][0:-1].isdigit():
+        # print line[1]
+        if int(line[1][0:-1]) in depth_range:
+            print line[4]
+            try:
+                depth_temp[int(line[1][0:-1])] = float(line[4])
+                continue
+            except ValueError:
+                continue
 
-    elif line[1] == 'END OF VARIABLES SECTION':
-        if in_circle(location[NAMEOFPLACE][0], location[NAMEOFPLACE][0], radius, Latitude, Longitude):
-            for key in depth_temp.keys():
-                data_dic[month][key] = data_dic.get(
-                    data_dic[month][key].append(depth_temp[key]), default=[depth_temp[key]])
+    elif line[0] == 'ENDOFVARIABLESSECTION':
+        # print Latitude, Longitude, Month, depth_temp
+        # print depth_temp.items()
+        if in_circle(float(location['Bismark'][0]), float(location['Bismark'][1]), float(radius), float(Latitude), float(Longitude)):
+            for depth_key in depth_temp.keys():
+                data_dic[Month] = data_dic.get(Month, {})
+                data_dic[Month][depth_key] = data_dic[Month].get(
+                    depth_key, [])
+                data_dic[Month][depth_key].append(depth_temp[depth_key])
+
             # clear out for next vals
             Latitude = 0
             Longitude = 0
@@ -113,3 +102,35 @@ for line in open(file_in, "r"):
             Day = 0
             depth_temp = {}
             continue
+print "done"
+
+# print data_dic.values()[1:10]
+
+print data_dic['1'].items()[1:5]
+
+
+# from the docs:
+
+# If interpolation is None, default to rc image.interpolation. See also
+# the filternorm and filterrad parameters. If interpolation is 'none', then
+# no interpolation is performed on the Agg, ps and pdf backends. Other
+# backends will fall back to 'nearest'.
+#
+# http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.imshow
+
+methods = [None, 'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
+           'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
+           'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
+
+grid = np.random.rand(4, 4)
+
+fig, axes = plt.subplots(3, 6, figsize=(12, 6),
+                         subplot_kw={'xticks': [], 'yticks': []})
+
+fig.subplots_adjust(hspace=0.3, wspace=0.05)
+
+for ax, interp_method in zip(axes.flat, methods):
+    ax.imshow(grid, interpolation=interp_method)
+    ax.set_title(interp_method)
+
+plt.show()
