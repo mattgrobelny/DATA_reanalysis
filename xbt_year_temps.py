@@ -48,7 +48,7 @@ data_dic = {}
 def extract_temp_depth_data(file_in, location_name, radius):
     print "Working on:", file_in
     print ""
-    print "Distance around", location_name, "(", location[location_name], "):", radius * 111.045, "km"
+    print "Distance around", location_name, location[location_name], ":", radius * 111.045, "km"
 
     total_line = sum(1 for line in open(file_in, "r"))
     count = 0
@@ -271,7 +271,7 @@ def run_all_for_rad(location_name, radius):
     for file_name in file_list:
         file_it = files_location + file_name
         extract_temp_depth_data(file_it, location_name, radius)
-    print ""
+        print ""
 
     print ""
     print "Data set spans from  year ", min(Year), "to", max(Year)
