@@ -69,7 +69,7 @@ def extract_temp_depth_data(file_in, location, radius):
 
         elif line[0] == 'Year':
             global Year
-            Year = line[2]
+            Year_it = line[2]
             continue
 
         elif line[0] == 'Month':
@@ -102,7 +102,7 @@ def extract_temp_depth_data(file_in, location, radius):
                     data_dic[Month][depth_key] = data_dic[Month].get(
                         depth_key, [])
                     data_dic[Month][depth_key].append(depth_temp[depth_key])
-
+                Year.append(Year_it)
                 # clear out for next vals
                 Latitude = 0
                 Longitude = 0
@@ -122,21 +122,8 @@ def extract_temp_depth_data(file_in, location, radius):
                 depth_temp = {}
                 continue
 ##########################################################################
-# Xbt data
-file_in_1 = "./WOD.27428.XBT.csv"
-extract_temp_depth_data(file_in_1, location, radius)
-print ""
 
-# CTD data
-file_in_2 = "./WOD.27428.CTD.csv"
-extract_temp_depth_data(file_in_2, location, radius)
-print ""
-print "Data set spans from  year ", min(Year), "to", max(Year)
-print "Months covered with data:"
-for i in sorted(data_dic.keys()):
-    print i
-print ""
-print "Number of xbt casts used:", count_data_sets
+# Make grid graph
 
 
 def make_grid_graph(data_dictionary, stat, location_name, radius):
@@ -155,7 +142,9 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         yi = np.linspace(Y.min(), Y.max(), 100)
 
         # Z is a matrix of x-y values
-        zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='cubic')
+        zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='linear')
+
+        #  methods : linear, nearest, cubic
 
         # I control the range of my colorbar by removing data
         # outside of my range of interest
@@ -176,10 +165,10 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
-        ax.set_title("Monthly Temperature vs Depth \n Location: %s (%s) with radius: %s" % (
-            location_name, location[location_name], radius))
+        ax.set_title("Monthly Temp vs Depth \n Loc: %s %s w/ radius: %s km" % (
+            location_name, location[location_name], radius * 111.045))
         cb = plt.colorbar()
-        cb.set_label("Temperature (C)")
+        cb.set_label("# of Data Points")
 
     else:
         for month_key in sorted(data_dictionary.keys()):
@@ -193,17 +182,16 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         yi = np.linspace(Y.min(), Y.max(), 100)
 
         # Z is a matrix of x-y values
-        zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='cubic')
+        zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='linear')
 
         # I control the range of my colorbar by removing data
         # outside of my range of interest
-        zmin = -3
-        zmax = 3
+        zmin = -10
+        zmax = 10
         zi[(zi < zmin) | (zi > zmax)] = None
 
         # Create the contour plot
-        CS = plt.contourf(xi, yi, zi, 15, cmap='bwr',
-                          vmax=zmax, vmin=zmin)
+        CS = plt.contourf(xi, yi, zi, 15, cmap='bwr', vmax=2, vmin=-2)
 
         ax = plt.gca()
         plt.xticks(np.arange(0, 12 + 1, 1.0))
@@ -214,16 +202,47 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
-        ax.set_title("Monthly Temperature vs Depth \n Location: %s (%s) with radius: %s" % (
-            location_name, location[location_name], radius))
+        ax.set_title("Monthly Temp vs Depth \n Loc: %s %s w/ radius: %s km" % (
+            location_name, location[location_name], radius * 111.045))
         cb = plt.colorbar()
         cb.set_label("Temperature (C)")
 
     output_dir = "./"
     plt.savefig(output_dir +
-                "Monthly_Temp_v_Depth_%s_radius_%s__stat_%s_km.png" % (location_name, stat, radius * 111.045))
+                "Monthly_Temp_v_Depth_%s_radius_%s__stat_%s.png" % (location_name, stat, radius), dpi=500)
     plt.close()
+##########################################################################
 
-make_grid_graph(data_dic, "stat", location_name, 1.5)
+# Import data
+# Xbt data
 
-make_grid_graph(data_dic, "count", location_name, 1.5)
+
+def run_all_for_rad(radius):
+    file_in_1 = "./WOD.27428.XBT.csv"
+    extract_temp_depth_data(file_in_1, location, radius)
+    print ""
+
+    # CTD data
+    file_in_2 = "./WOD.27428.CTD.csv"
+    extract_temp_depth_data(file_in_2, location, radius)
+    print ""
+    print "Data set spans from  year ", min(Year), "to", max(Year)
+    print "Months covered with data:"
+    for i in sorted(data_dic.keys()):
+        print i
+    print ""
+    print "Number of XBT/CTD casts used:", count_data_sets
+
+    make_grid_graph(data_dic, "stat", location_name, radius)
+
+    make_grid_graph(data_dic, "count", location_name, radius)
+
+    # CLEAR dictionary
+    global data_dic
+    global Year
+    data_dic = {}
+    Year = []
+
+run_all_for_rad(0.5)
+run_all_for_rad(1)
+run_all_for_rad(1.5)
