@@ -35,19 +35,20 @@ depth_range = range(0, 2500, 5)
 location = {'Bismark': [-64.866794, -63.650144]}
 
 # Each degree of latitude is approximately 69 miles (111 kilometers) apart.
-radius = 1
-
+radius = 1.5
+location_name = "Bismark"
+print "Distance around", location_name, "(", location[location_name], "):", radius * 69
 data_dic = {}
 
 total_line = sum(1 for line in open(file_in))
 
 count = 0
 for line in open(file_in, "r"):
-    # progress(count, total_line, suffix='')
+    progress(count, total_line, suffix='')
     line = line.strip('\n')
     line = line.replace(' ', '')
     line = line.split(',')
-    # print line
+
     if line[0] == 'Latitude':
         Latitude = line[2]
         continue
@@ -81,7 +82,7 @@ for line in open(file_in, "r"):
     elif line[0] == 'ENDOFVARIABLESSECTION':
         # print Latitude, Longitude, Month, depth_temp
         # print depth_temp.items()
-        if in_circle(float(location['Bismark'][0]), float(location['Bismark'][1]), float(radius), float(Latitude), float(Longitude)):
+        if in_circle(float(location[location_name][0]), float(location[location_name][1]), float(radius), float(Latitude), float(Longitude)):
             for depth_key in depth_temp.keys():
                 data_dic[Month] = data_dic.get(Month, {})
                 data_dic[Month][depth_key] = data_dic[Month].get(
@@ -105,9 +106,8 @@ for line in open(file_in, "r"):
             Day = 0
             depth_temp = {}
             continue
-print "done"
 
-# print data_dic.values()[1:10]
+print data_dic.keys()
 
 # print data_dic['1'].items()[1:5]
 
@@ -131,20 +131,29 @@ zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='cubic')
 
 # I control the range of my colorbar by removing data
 # outside of my range of interest
-zmin = -10
-zmax = 10
+zmin = -3
+zmax = 3
 zi[(zi < zmin) | (zi > zmax)] = None
 
 # Create the contour plot
-CS = plt.contourf(xi, yi, zi, 15, cmap='bwr')
-# vmax=zmax, vmin=zmin)
+CS = plt.contourf(xi, yi, zi, 15, cmap='bwr',
+                  vmax=zmax, vmin=zmin)
 
 ax = plt.gca()
 plt.xticks(np.arange(0, 12 + 1, 1.0))
+
+zc = CS.collections[6]
+plt.setp(zc, linewidth=4)
 ax.invert_yaxis()
 ax.grid(True)
-plt.legend(title="Temperature (°C)")
 ax.set_xlabel('Month')
 ax.set_ylabel('Depth (m)')
-plt.colorbar()
-plt.show()
+ax.set_title("Monthly Temperature vs Depth \n Location: %s (%s) with radius: %s" % (
+    location_name, location[location_name], radius))
+cb = plt.colorbar()
+cb.set_label("Temperature (C)")
+
+output_dir = "./"
+plt.savefig(output_dir +
+            "Year_long_temp_map_vs_depth_Loc_%s_radius_%s.png" % (location_name, radius))
+plt.close()
