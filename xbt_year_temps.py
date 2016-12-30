@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import sys
 import numpy as np
@@ -31,9 +32,10 @@ Day = 0
 depth_temp = {}
 depth_range = range(0, 2500, 5)
 
-location = {'Bismark': [-64.866794, -63.650144]
-            }
-radius = 0.5
+location = {'Bismark': [-64.866794, -63.650144]}
+
+# Each degree of latitude is approximately 69 miles (111 kilometers) apart.
+radius = 1
 
 data_dic = {}
 
@@ -42,7 +44,6 @@ total_line = sum(1 for line in open(file_in))
 count = 0
 for line in open(file_in, "r"):
     # progress(count, total_line, suffix='')
-    count += 1
     line = line.strip('\n')
     line = line.replace(' ', '')
     line = line.split(',')
@@ -93,6 +94,7 @@ for line in open(file_in, "r"):
             Month = 0
             Day = 0
             depth_temp = {}
+            count += 1
             continue
         else:
             # clear out for next vals if values not in r radius around catch
@@ -109,19 +111,7 @@ print "done"
 
 # print data_dic['1'].items()[1:5]
 
-
-# from the docs:
-
-# If interpolation is None, default to rc image.interpolation. See also
-# the filternorm and filterrad parameters. If interpolation is 'none', then
-# no interpolation is performed on the Agg, ps and pdf backends. Other
-# backends will fall back to 'nearest'.
-#
-# http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.imshow
-
-# methods = [None, 'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
-#            'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
-#            'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
+print "Number of xbt casts used:", count
 
 # Convert from pandas dataframes to numpy arrays
 X, Y, Z = np.array([]), np.array([]), np.array([])
@@ -132,18 +122,8 @@ for month_key in sorted(data_dic.keys()):
         Y = np.append(Y, int(depth_key))
         Z = np.append(Z, np.average(data_dic[month_key][depth_key]))
 
-# for i in range(10):
-#     print X[i]
-#
-# for i in range(10):
-#     print Y[i]
-#
-# for i in range(10):
-#     print Z[i]
-
-
 # create x-y points to be used in heatmap
-xi = np.linspace(X.min(), X.max(), 100)
+xi = np.linspace(X.min(), X.max() + 1, 100)
 yi = np.linspace(Y.min(), Y.max(), 100)
 
 # Z is a matrix of x-y values
@@ -151,15 +131,20 @@ zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='cubic')
 
 # I control the range of my colorbar by removing data
 # outside of my range of interest
-zmin = -3
-zmax = 5
+zmin = -10
+zmax = 10
 zi[(zi < zmin) | (zi > zmax)] = None
 
 # Create the contour plot
-CS = plt.contourf(xi, yi, zi, 15, cmap=plt.cm.rainbow,
-                  vmax=zmax, vmin=zmin)
+CS = plt.contourf(xi, yi, zi, 15, cmap='bwr')
+# vmax=zmax, vmin=zmin)
+
 ax = plt.gca()
+plt.xticks(np.arange(0, 12 + 1, 1.0))
 ax.invert_yaxis()
 ax.grid(True)
+plt.legend(title="Temperature (°C)")
+ax.set_xlabel('Month')
+ax.set_ylabel('Depth (m)')
 plt.colorbar()
 plt.show()
