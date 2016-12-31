@@ -19,6 +19,9 @@ library(coin)
 setwd("~/Documents/OneDrive/Antarctica Files/Data/Gradient Project/Hobodata/Large Tank/DATA_reanalysis")
 
 levels(time_0_time_end_stack$Species) <- c("C.wilsoni","L.squamifrons", "N.coriiceps", "T.hansoni")
+
+time_0_time_end_stack$Species <- factor(time_0_time_end_stack$Species,levels = c("L.squamifrons", "T.hansoni","C.wilsoni", "N.coriiceps"))
+
 two_stage_all = ggplot(data= time_0_time_end_stack, aes(x=TimeStage, y= Temp))
 two_stage_facet = two_stage_all + 
   geom_boxplot()+ 

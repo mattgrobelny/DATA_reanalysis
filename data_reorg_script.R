@@ -128,20 +128,23 @@ add_afgp_cat <- function(data, Lsq_data_name) {
             data[i, 4] = as.character("Neg")
             setTxtProgressBar(pb, i)
         } else {
-            data[i, 3] <- as.character("Pos")
+            data[i, 4] <- as.character("Pos")
             setTxtProgressBar(pb, i)
         }
 
     }
-    data[, 3] <- as.factor(data[, 3])
+    data[, 4] <- as.factor(data[, 4])
     names(data) <- c()
     filename <- paste(as.character(substitute(data)))
-
-    write.table(data, filename, sep = ",")
-
-    # change col names
     colnames(data) <- c("Skip", "Temperature", "Species", "AFGP_content")
+    
     return(data)
+    # 
+    # write.table(data, filename, sep = ",")
+    # 
+    # # change col names
+    # colnames(data) <- c("Skip", "Temperature", "Species", "AFGP_content")
+    # return(data)
 }
 ################################################################################################################################################################ run me to add afgp pos neg column to dataset: stack_all_species_1000 =
 ################################################################################################################################################################ add_afgp_cat(stack_all_species_1000,Lsq_data_1000)

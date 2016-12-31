@@ -22,7 +22,7 @@ setwd("~/Documents/OneDrive/Antarctica Files/Data/Gradient Project/Hobodata/Larg
 # data reorgnization
 
 # Data for time start
-number_of_start_end_dtp = 1500
+number_of_start_end_dtp = 500
 time_0 = data.frame(Master_species_gradient_logger_data[1:number_of_start_end_dtp,4:27])
 colnames(time_0) <- c(colnames(Master_species_gradient_logger_data)[4:27])
 # Data for time end
@@ -87,7 +87,8 @@ wilcox.test(Temp ~ TimeStage,
             alternative = "two.sided",
             conf.int =TRUE)
 
-
+######################################################################
+# No afgp stratfication 
 #use kruskal_test for signficance using a sim permutation data set 
 # Are the distriubtions of median temps which the fish were found at, at the end of the expereiment different?
 ks_test = kruskal_test(Temp ~ Species, 
@@ -96,12 +97,35 @@ ks_test = kruskal_test(Temp ~ Species,
 ks_test
 # P-value ≤ α: The differences between some of the medians are statistically significant
 
-
 # How are the median temperatures distributions different between fish species, at the end of the expereiment?
 dunnTest(Temp ~ Species, 
          data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],
          two.sided= TRUE, method="bonferroni")
+dunnTest(Temp ~ Species, 
+         data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],
+         two.sided= FALSE, method="bonferroni")
 
+######################################################################
+# yes afgp stratification 
+
+time_0_time_end_stack_w_afgp
+colnames(time_0_time_end_stack_w_afgp) <- c("Temperature", "Species","TimeStage" ,"AFGP_content")
+
+ks_test2 = kruskal_test(Temperature ~ Species, 
+                       data= time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd"),1:4],conf.int =TRUE,
+                       distribution = approximate(B = 10000))
+ks_test2
+
+# How are the median temperatures distributions different between fish species, at the end of the expereiment?
+dunnTest(Temperature ~ Species, 
+         data= time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd"),1:4],
+         two.sided= TRUE, method="bonferroni")
+
+dunnTest(Temperature ~ AFGP_content, 
+         data= time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd"),1:4],
+         two.sided= TRUE, method="bonferroni")
+
+######################################################################
 # pairwise test of end values 
 # 
 stack_time_end2 = stack_time_0
