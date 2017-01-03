@@ -46,8 +46,8 @@ data_dic = {}
 
 
 def extract_temp_depth_data(file_in, location_name, radius):
+    print " "
     print "Working on:", file_in
-    print ""
     print "Distance around", location_name, location[location_name], ":", radius * 111.045, "km"
 
     total_line = sum(1 for line in open(file_in, "r"))
@@ -157,11 +157,13 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         # zi[(zi < zmin) | (zi > zmax)] = None
 
         # Create the contour plot
-        CS = plt.contourf(xi, yi, zi, 15, cmap='plasma')
+        CS = plt.contourf(xi, yi, zi, 20, cmap='plasma')
         # vmax=zmax, vmin=zmin)
 
         ax = plt.gca()
-        plt.xticks(np.arange(1, 13, 1.0))
+        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        plt.xticks(np.arange(1, 13, 1.0), months, size='small', rotation=17)
 
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
@@ -169,8 +171,7 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
-        ax.set_title("Monthly Temp vs Depth \n Loc: %s %s w/ radius: %s km" % (
-            location_name, location[location_name], radius * 111.045))
+        ax.set_title("%s" % (location_name))
         cb = plt.colorbar()
         cb.set_label("# of Data Points")
     elif stat == "variance":
@@ -196,11 +197,13 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         # zi[(zi < zmin) | (zi > zmax)] = None
 
         # Create the contour plot
-        CS = plt.contourf(xi, yi, zi, 15, cmap='viridis')
+        CS = plt.contourf(xi, yi, zi, 20, cmap='viridis')
         # vmax=zmax, vmin=zmin)
 
         ax = plt.gca()
-        plt.xticks(np.arange(1, 13, 1.0))
+        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        plt.xticks(np.arange(1, 13, 1.0), months, size='small', rotation=17)
 
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
@@ -208,10 +211,9 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
-        ax.set_title("Monthly Temp vs Depth \n Loc: %s %s w/ radius: %s km" % (
-            location_name, location[location_name], radius * 111.045))
+        ax.set_title("%s" % (location_name))
         cb = plt.colorbar()
-        cb.set_label("Variance")
+        cb.set_label("Variance ($^\circ$C)")
     else:
         for month_key in sorted(data_dictionary.keys()):
             for depth_key in sorted(data_dictionary[month_key].keys()):
@@ -233,10 +235,13 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         zi[(zi < zmin) | (zi > zmax)] = None
 
         # Create the contour plot
-        CS = plt.contourf(xi, yi, zi, 15, cmap='bwr', vmax=2, vmin=-2)
+        CS = plt.contourf(xi, yi, zi, 20, cmap='bwr', vmax=2, vmin=-2)
 
         ax = plt.gca()
-        plt.xticks(np.arange(1, 13, 1.0))
+        #plt.xticks(np.arange(1, 13, 1.0))
+        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        plt.xticks(np.arange(1, 13, 1.0), months, size='small', rotation=17)
 
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
@@ -244,10 +249,9 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
-        ax.set_title("Monthly Temp vs Depth \n Loc: %s %s w/ radius: %s km" % (
-            location_name, location[location_name], radius * 111.045))
+        ax.set_title("%s" % (location_name))
         cb = plt.colorbar()
-        cb.set_label("Temperature (C)")
+        cb.set_label("Temperature ($^\circ$C)")
 
     output_dir = "./"
     plt.savefig(output_dir +
@@ -261,13 +265,13 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
 
 def run_all_for_rad(location_name, radius):
     files_location = './WOD_2_all_sensors/'
-    file_list = [  # 'use_ocldb1483123265.6373.APB.csv',
-        #'use_ocldb1483123265.6373.CTD.csv',
-        #'use_ocldb1483123265.6373.GLD.csv',
-        #'use_ocldb1483123265.6373.MBT.csv',
-        'use_ocldb1483123265.6373.OSD.csv',
-        'use_ocldb1483123265.6373.PFL.csv',
-        'use_ocldb1483123265.6373.XBT.csv']
+    file_list = ['use_ocldb1483123265.6373.APB.csv',
+                 'use_ocldb1483123265.6373.CTD.csv',
+                 'use_ocldb1483123265.6373.GLD.csv',
+                 'use_ocldb1483123265.6373.MBT.csv',
+                 'use_ocldb1483123265.6373.OSD.csv',
+                 'use_ocldb1483123265.6373.PFL.csv',
+                 'use_ocldb1483123265.6373.XBT.csv']
     for file_name in file_list:
         file_it = files_location + file_name
         extract_temp_depth_data(file_it, location_name, radius)
@@ -303,5 +307,5 @@ def run_all_for_rad(location_name, radius):
 
 for loc in location.keys():
     #run_all_for_rad(loc, 0.5)
-    run_all_for_rad(loc, 2.5)
+    run_all_for_rad(loc, 1)
     #run_all_for_rad(loc, 1.5)

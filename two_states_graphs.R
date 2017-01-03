@@ -28,7 +28,7 @@ two_stage_facet = two_stage_all +
   theme_bw() +
   facet_grid(.~Species)+
   ylim(-2,2)+
-  ylab(parse(text=paste("Temperature (C","^o",")")))+
+  ylab(expression("Temperature ("*~degree*"C)"))+
   geom_hline(yintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
   geom_hline(yintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)+
   stat_summary(fun.y=median, geom="line", aes(group=1), color='red')  + 
@@ -39,4 +39,19 @@ two_stage_facet
 ggsave(two_stage_facet, file="two_stage_facet.png", dpi = 500)
 
 
+#### Output Tend box plot
+Tend_stage_all_start = ggplot(data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3], aes(x=Species, y= Temp))
+Tend_stage_all = Tend_stage_all_start + 
+  geom_boxplot()+ 
+  theme_bw() +
+  #facet_grid(.~Species)+
+  ylim(-2,2)+
+  ylab(expression("Temperature ("*~degree*"C)"))+
+  geom_hline(yintercept = 1.490, color="red",linetype = "dashed",alpha = 0.5)+
+  geom_hline(yintercept = -1.130, color= "blue",linetype = "dashed",alpha = 0.5)
+  # stat_summary(fun.y=median, geom="line", aes(group=1), color='red')  + 
+  # stat_summary(fun.y=median, geom="point", color='red')
+Tend_stage_all
 
+
+ggsave(Tend_stage_all, file="Tend_stage_all.png", dpi = 500)

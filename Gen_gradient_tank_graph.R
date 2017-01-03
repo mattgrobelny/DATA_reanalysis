@@ -57,12 +57,12 @@ ggplot_gradient_temps = ggplot(data=MM_M, aes(time)) +
              linetype = "dashed", alpha = 0.5) + 
   geom_hline(yintercept = -1.13, color = "blue",
              linetype = "dashed", alpha = 0.5) + 
-  ylab(parse(text = paste("Temperature (C", "^o",")")))+
+  ylab(expression("Temperature ("*~degree*"C)"))+
   xlab("Duration (hours)")+
   scale_x_discrete("Duration (hours)",breaks= c(0,500,1000,1500,2000),
                    labels = c("0","6","12","18","24"), limits=c(0:2001))+
-  scale_colour_manual(name="Temperature\nSensor", values=c("A" = "red", "B" = "red4", "C" = "blue4", "D" = "blue"),
-  guide = guide_legend(fill = NULL,colour = NULL))
+  scale_colour_manual(name="Temperature Sensor", values=c("A" = "red", "B" = "red4", "C" = "blue4", "D" = "blue"),
+  guide = guide_legend(fill = NULL,colour = NULL))+ theme(legend.position = "bottom")
 ggplot_gradient_temps
 
 

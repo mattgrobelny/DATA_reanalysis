@@ -82,7 +82,7 @@ wilcox.test(Temp ~ TimeStage,
 
 
 # Cwil t0 vs t_end
-wilcox.test(Temp ~ TimeStage, 
+Cwil_t0_te <- wilcox.test(Temp ~ TimeStage, 
             data= time_0_time_end_stack[which(time_0_time_end_stack$Species=="C.wilsoni"),1:3], 
             alternative = "two.sided",
             conf.int =TRUE)
@@ -101,9 +101,15 @@ ks_test
 dunnTest(Temp ~ Species, 
          data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],
          two.sided= TRUE, method="bonferroni")
-dunnTest(Temp ~ Species, 
-         data= time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1:3],
-         two.sided= FALSE, method="bonferroni")
+
+######################################################################
+## Conover test
+
+g <- factor(rep(1:4,c(3000,3000,3000,3000)),labels = c("C.wilsoni","L.squamifrons", "N.coriiceps", "T.hansoni"))
+conover.test( x = time_0_time_end_stack[which(time_0_time_end_stack$TimeStage=="TEnd"),1], g,
+            method="bonferroni", kw= TRUE)
+
+
 
 ######################################################################
 # yes afgp stratification 
@@ -136,7 +142,58 @@ stack_time_end2$Species <- sub("Than[0-9]", "Than", stack_time_end2$Species, per
 head(stack_time_end2)
 pairwise.wilcox.test(stack_time_end2$Temp, stack_time_end2$Species, p.adjust.method="bonf")
 
+######################################################################
+## Calculate delta variation between t0 and tend
+levels(time_0_time_end_stack$Species) <- c("C.wilsoni","L.squamifrons", "N.coriiceps", "T.hansoni")
+
+variation_lsq_t_end <- var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="L.squamifrons"),1])
+
+variation_lsq_t_0 <- var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="T0" &time_0_time_end_stack_w_afgp$Species =="L.squamifrons"),1])
+delta_var_lsq <- variation_lsq_t_end- variation_lsq_t_0
+delta_var_lsq
+  
+variation_than_t_end <-var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="T.hansoni"),1])
+variation_than_t_0 <-var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="T0" &time_0_time_end_stack_w_afgp$Species =="T.hansoni"),1])
+delta_var_than<-  variation_than_t_end -variation_than_t_0
+delta_var_than
+
+variation_cwilq_t_end <-  var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="C.wilsoni"),1])
+variation_cwil_t_0 <-var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="T0" &time_0_time_end_stack_w_afgp$Species =="C.wilsoni"),1])
+delta_var_cwil<-variation_cwilq_t_end -  variation_cwil_t_0
+delta_var_cwil
+
+variation_ncor_t_end <- var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="N.coriiceps"),1])
+variation_ncor_t_0 <- var(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="T0" &time_0_time_end_stack_w_afgp$Species =="N.coriiceps"),1])
+delta_var_ncor<-variation_ncor_t_end -variation_ncor_t_0
+delta_var_ncor
 
 
+######################################################################
+## Calculate median of tend
 
+median_lsq_t_end <- median(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="L.squamifrons"),1])
+median_lsq_t_end
 
+median_than_t_end <-median(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="T.hansoni"),1])
+median_than_t_end
+
+median_cwil_t_end <-  median(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="C.wilsoni"),1])
+median_cwil_t_end
+
+median_ncor_t_end <- median(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="N.coriiceps"),1])
+median_ncor_t_end
+
+######################################################################
+## Calculate summary of tend
+
+summary_lsq_t_end <- summary(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="L.squamifrons"),1])
+summary_lsq_t_end
+
+summary_than_t_end <-summary(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="T.hansoni"),1])
+summary_than_t_end
+
+summary_cwil_t_end <-  summary(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="C.wilsoni"),1])
+summary_cwil_t_end
+
+summary_ncor_t_end <- summary(time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd" &time_0_time_end_stack_w_afgp$Species =="N.coriiceps"),1])
+summary_ncor_t_end

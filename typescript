@@ -1,0 +1,75 @@
+Script started on Tue Jan  3 13:21:50 2017
+[?1034hbash-3.2$ pcat c2014007a.btl | head -n 1000 | cut -f 2[K[K[C[C[C[C[C[C[C[C[C[Cls[Kcd BOT/ls[Kcat c2014007a.btl | head -n 1000 | cut -f 2[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kls
+CDF_AFGP_pos_v_neg_no_Ncor.png					Ncor4.png
+CDF_AFGP_pos_v_neg_w_Ncor.png					Ncor6.png
+CDF_all_species.png						Ncor7.png
+CDF_all_species_noNgib.png					Ngib1.png
+CDF_demo.xlsx							Ngib2.png
+CTD_graph.R							Ngib3.png
+Cwil1.png							README.md
+Cwil2.png							Rplot.png
+Cwil3.png							Rplot01.png
+Cwil4.png							Rplot02.png
+Cwil5.png							Rplot03.png
+Cwil6.png							Rplot04.png
+Gen_gradient_tank_graph.R					Rplot05.png
+Graphs_for_ea_sp						Than1.png
+KS_test.R							Than2.png
+Kmer_break_down.R						Than3.png
+Kol_Smir_CDF_graphs.R						Than4.png
+Lsq_dmaw_kmer_analysis.xlsx					Than5.png
+Lsquam1.png							Than6.png
+Lsquam2.png							WOD_2_all_Sen_rad1_corrected_for_12_months
+Lsquam3.png							WOD_2_all_sensors
+Lsquam4.png							WOD_all_sensors_graphs_bad
+Lsquam5.png							Xbt_graphs
+Lsquam6.png							aov_analysis.R
+Master_species_gradient_logger_data.csv				boot_bar_all_data.png
+Master_species_gradient_logger_data.xlsx			boot_bar_last1000.png
+Master_species_gradient_logger_data_reanalysis.R		boot_graphs.R
+Master_species_gradient_logger_data_reanalysis.RData		bootscript.R
+Monthly_Temp_v_Depth_Bismark_Strait_radius_1.tsv		data_reorg_script.R
+Monthly_Temp_v_Depth_Bismark_Strait_radius_1_count.png		denisty_plot_all_species.png
+Monthly_Temp_v_Depth_Bismark_Strait_radius_1_stat.png		ggplot_XBT_2014.png
+Monthly_Temp_v_Depth_Bismark_Strait_radius_1_variance.png	ggplot_gradient_temps.png
+Monthly_Temp_v_Depth_Dallman_Bay_radius_1.tsv			ocldb1483039065.27428.XBT.csv
+Monthly_Temp_v_Depth_Dallman_Bay_radius_1_count.png		permutation_test.R
+Monthly_Temp_v_Depth_Dallman_Bay_radius_1_stat.png		quickrun.R
+Monthly_Temp_v_Depth_Dallman_Bay_radius_1_variance.png		stack_all_species.csv
+Monthly_Temp_v_Depth_Gerlache_Strait_radius_1.tsv		stack_all_species_1000
+Monthly_Temp_v_Depth_Gerlache_Strait_radius_1_count.png		stack_histogram_all_species.png
+Monthly_Temp_v_Depth_Gerlache_Strait_radius_1_stat.png		temp_distribution_density.R
+Monthly_Temp_v_Depth_Gerlache_Strait_radius_1_variance.png	timeSeries_graphOutput.R
+Monthly_Temp_v_Depth_Hugo_Island_radius_1.tsv			two_stage_facet.png
+Monthly_Temp_v_Depth_Hugo_Island_radius_1_count.png		two_states.R
+Monthly_Temp_v_Depth_Hugo_Island_radius_1_stat.png		two_states_graphs.R
+Monthly_Temp_v_Depth_Hugo_Island_radius_1_variance.png		typescript
+Ncor1.png							untitled folder
+Ncor2.png							with_Nor_NO_Ngib_AFGP_CDF.png
+Ncor3.png							xbt_year_temps.py
+bash-3.2$ python xbt_year_temps.py 
+xbt_year_temps.py:290: SyntaxWarning: name 'data_dic' is used prior to global declaration
+  global data_dic
+xbt_year_temps.py:292: SyntaxWarning: name 'Year' is used prior to global declaration
+  global Year
+xbt_year_temps.py:301: SyntaxWarning: name 'count_data_sets' is used prior to global declaration
+  global count_data_sets
+/Users/matt/anaconda/lib/python2.7/site-packages/matplotlib/font_manager.py:273: UserWarning: Matplotlib is building the font cache using fc-list. This may take a moment.
+  warnings.warn('Matplotlib is building the font cache using fc-list. This may take a moment.')
+ 
+Working on: ./WOD_2_all_sensors/use_ocldb1483123265.6373.APB.csv
+Distance around Dallman_Bay [-63.900278, -62.76677] : 111.045 km
+^CTraceback (most recent call last):
+  File "xbt_year_temps.py", line 306, in <module>
+    run_all_for_rad(loc, 1)
+  File "xbt_year_temps.py", line 273, in run_all_for_rad
+    extract_temp_depth_data(file_it, location_name, radius)
+  File "xbt_year_temps.py", line 53, in extract_temp_depth_data
+    total_line = sum(1 for line in open(file_in, "r"))
+  File "xbt_year_temps.py", line 53, in <genexpr>
+    total_line = sum(1 for line in open(file_in, "r"))
+KeyboardInterrupt
+bash-3.2$ exit
+exit
+
+Script done on Tue Jan  3 13:22:16 2017

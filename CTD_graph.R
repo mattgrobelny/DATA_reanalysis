@@ -65,10 +65,10 @@ ggplot_XBT_2014 = ggplot(data=na.omit(XBT_R[3:N,1:4]), aes(y=Depth)) +
   scale_y_reverse()+
   geom_hline(yintercept = 0, color = "black",
              linetype = "dashed", alpha = 0.7) + 
-  xlab(parse(text = paste("Temperature (C", "^o",")")))+
+  xlab(expression("Temperature "*~degree*C))+
   ylab("Depth (m)")+
   scale_colour_manual(name="Location", values=c("Bismark Strait" = "red", "Dallman Bay" = "red4", "Gerlache Strait" = "blue4"),
-                      guide = guide_legend(fill = NULL,colour = NULL))
+                      guide = guide_legend(fill = NULL,colour = NULL)) + theme(legend.position = "bottom")
 ggplot_XBT_2014
 
 ggsave(ggplot_XBT_2014, file = "ggplot_XBT_2014.png", dpi = 500)
