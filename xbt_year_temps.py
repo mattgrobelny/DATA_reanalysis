@@ -142,8 +142,8 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
                 Z = np.append(Z, len(data_dictionary[month_key][depth_key]))
 
         # create x-y points to be used in heatmap
-        xi = np.linspace(X.min(), X.max() + 1, 100)
-        yi = np.linspace(Y.min(), Y.max(), 100)
+        xi = np.linspace(X.min(), X.max(), 1000)
+        yi = np.linspace(Y.min(), Y.max(), 1000)
 
         # Z is a matrix of x-y values
         zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='linear')
@@ -161,7 +161,7 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         # vmax=zmax, vmin=zmin)
 
         ax = plt.gca()
-        plt.xticks(np.arange(0, 12 + 1, 1.0))
+        plt.xticks(np.arange(1, 13, 1.0))
 
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
@@ -181,8 +181,8 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
                 Z = np.append(Z, np.var(data_dictionary[month_key][depth_key]))
 
         # create x-y points to be used in heatmap
-        xi = np.linspace(X.min(), X.max() + 1, 100)
-        yi = np.linspace(Y.min(), Y.max(), 100)
+        xi = np.linspace(X.min(), X.max(), 1000)
+        yi = np.linspace(Y.min(), Y.max(), 1000)
 
         # Z is a matrix of x-y values
         zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='linear')
@@ -200,7 +200,7 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         # vmax=zmax, vmin=zmin)
 
         ax = plt.gca()
-        plt.xticks(np.arange(0, 12 + 1, 1.0))
+        plt.xticks(np.arange(1, 13, 1.0))
 
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
@@ -220,8 +220,8 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
                 Z = np.append(Z, np.mean(
                     data_dictionary[month_key][depth_key]))
         # create x-y points to be used in heatmap
-        xi = np.linspace(X.min(), X.max() + 1, 100)
-        yi = np.linspace(Y.min(), Y.max(), 100)
+        xi = np.linspace(X.min(), X.max(), 1000)
+        yi = np.linspace(Y.min(), Y.max(), 1000)
 
         # Z is a matrix of x-y values
         zi = griddata((X, Y), Z, (xi[None, :], yi[:, None]), method='linear')
@@ -236,7 +236,7 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         CS = plt.contourf(xi, yi, zi, 15, cmap='bwr', vmax=2, vmin=-2)
 
         ax = plt.gca()
-        plt.xticks(np.arange(0, 12 + 1, 1.0))
+        plt.xticks(np.arange(1, 13, 1.0))
 
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
@@ -261,13 +261,13 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
 
 def run_all_for_rad(location_name, radius):
     files_location = './WOD_2_all_sensors/'
-    file_list = ['use_ocldb1483123265.6373.APB.csv',
-                 'use_ocldb1483123265.6373.CTD.csv',
-                 'use_ocldb1483123265.6373.GLD.csv',
-                 'use_ocldb1483123265.6373.MBT.csv',
-                 'use_ocldb1483123265.6373.OSD.csv',
-                 'use_ocldb1483123265.6373.PFL.csv',
-                 'use_ocldb1483123265.6373.XBT.csv']
+    file_list = [  # 'use_ocldb1483123265.6373.APB.csv',
+        #'use_ocldb1483123265.6373.CTD.csv',
+        #'use_ocldb1483123265.6373.GLD.csv',
+        #'use_ocldb1483123265.6373.MBT.csv',
+        'use_ocldb1483123265.6373.OSD.csv',
+        'use_ocldb1483123265.6373.PFL.csv',
+        'use_ocldb1483123265.6373.XBT.csv']
     for file_name in file_list:
         file_it = files_location + file_name
         extract_temp_depth_data(file_it, location_name, radius)
@@ -302,6 +302,6 @@ def run_all_for_rad(location_name, radius):
     count_data_sets = 0
 
 for loc in location.keys():
-    run_all_for_rad(loc, 0.5)
-    run_all_for_rad(loc, 1)
-    run_all_for_rad(loc, 1.5)
+    #run_all_for_rad(loc, 0.5)
+    run_all_for_rad(loc, 2.5)
+    #run_all_for_rad(loc, 1.5)
