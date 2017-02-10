@@ -25,6 +25,9 @@ Latitude = 0
 Longitude = 0
 
 Year = []
+Country = []
+Project = []
+Deep_Freeze_years = []
 coordinates_used = []
 Month = 0
 Day = 0
@@ -59,7 +62,6 @@ def extract_temp_depth_data(file_in, location_name, radius):
         line = line.strip('\n')
         line = line.replace(' ', '')
         line = line.split(',')
-
         if line[0] == 'Latitude':
             global Latitude
             Latitude = line[2]
@@ -86,27 +88,45 @@ def extract_temp_depth_data(file_in, location_name, radius):
             continue
 
         elif line[1][0:-1].isdigit():
-            # print line[1]
             if int(line[1][0:-1]) in depth_range:
-                # print line[4]
                 try:
                     depth_temp[int(line[1][0:-1])] = float(line[4])
                     continue
                 except ValueError:
                     continue
 
+        elif line[0] == 'Project':
+            global Project
+
+            if line[4] not in Project:
+                Project.append(line[4])
+            elif line[4] == "DEEPFREEZE":
+                Deep_Freeze_years.append(Year_it)
+            else:
+                continue
+
+        elif line[0] == 'Country':
+            global Country
+            if line[4] not in Country:
+                Country.append(line[4])
+            else:
+                continue
+
         elif line[0] == 'ENDOFVARIABLESSECTION':
             # print Latitude, Longitude, Month, depth_temp
             # print depth_temp.items()
             if in_circle(float(location[location_name][0]), float(location[location_name][1]), float(radius), float(Latitude), float(Longitude)):
+                # organize data into 3d dictionary
                 for depth_key in depth_temp.keys():
                     global data_dic
                     data_dic[Month] = data_dic.get(Month, {})
                     data_dic[Month][depth_key] = data_dic[Month].get(
                         depth_key, [])
                     data_dic[Month][depth_key].append(depth_temp[depth_key])
+                # Save meta data
                 coordinates_used.append([Latitude, Longitude])
                 Year.append(Year_it)
+
                 # clear out for next vals
                 Latitude = 0
                 Longitude = 0
@@ -285,6 +305,33 @@ def run_all_for_rad(location_name, radius):
     print ""
     print "Number of XBT/CTD casts used:", count_data_sets
 
+    # Output meta data source:
+    country_out = open("Monthly_Temp_v_Depth_%s_radius_%s_SOURCE_country.tsv" %
+                       (location_name, radius), 'w')
+    for country_val in Country:
+        country_out.write("%s\n" % (country_val))
+    country_out.close
+
+    project_out = open("Monthly_Temp_v_Depth_%s_radius_%s_SOURCE_Project.tsv" %
+                       (location_name, radius), 'w')
+    for project_val in Project:
+        project_out.write("%s\n" % (project_val))
+    project_out.close
+
+    time_span_out = open("Monthly_Temp_v_Depth_%s_radius_%s_SOURCE_time_span.txt" %
+                         (location_name, radius), 'w')
+    time_span_out.write("Data set spans from  year %s to %s \n" %
+                        (min(Year), max(Year)))
+    time_span_out.write("Months covered with data:\n")
+    for i in sorted(data_dic.keys()):
+        time_span_out.write("%s\n" % (i))
+    time_span_out.write("\n")
+    time_span_out.write("Number of XBT/CTD casts used:%s \n" %
+                        (count_data_sets))
+    time_span_out.write("Project: DeepFreeze years: %s to %s" %
+                        (min(Deep_Freeze_years), max(Deep_Freeze_years)))
+    time_span_out.close
+
     make_grid_graph(data_dic, "stat", location_name, radius)
 
     make_grid_graph(data_dic, "count", location_name, radius)
@@ -295,7 +342,14 @@ def run_all_for_rad(location_name, radius):
     data_dic = {}
     global Year
     Year = []
+    global Project
+    Project = []
+    global Country
+    Country = []
+    global Deep_Freeze_years
+    Deep_Freeze_years = []
     global coordinates_used
+
     cordout = open("Monthly_Temp_v_Depth_%s_radius_%s.tsv" %
                    (location_name, radius), 'w')
     for cord in coordinates_used:

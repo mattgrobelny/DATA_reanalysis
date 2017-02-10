@@ -1,0 +1,12 @@
+Data set spans from  year 1927 to 2016 
+Months covered with data:
+1
+11
+12
+2
+3
+4
+5
+
+Number of XBT/CTD casts used:2222 
+Project: DeepFreeze years: 1974 to 1987
