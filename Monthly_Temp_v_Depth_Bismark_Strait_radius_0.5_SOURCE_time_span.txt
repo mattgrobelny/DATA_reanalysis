@@ -1,0 +1,9 @@
+Data set spans from  year 1969 to 2008 
+Months covered with data:
+1
+12
+2
+3
+4
+
+Number of XBT/CTD casts used:41 

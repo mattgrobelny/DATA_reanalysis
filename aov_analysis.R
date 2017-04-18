@@ -28,9 +28,11 @@ levels(time_0_time_end_stack_aov$Species) <- c("C.wilsoni", "L.squamifrons", "N.
 
 summary(time_0_time_end_stack_aov)
 
-aov = aov(Temp ~ (TimeStage * Species) + Error(Subject/Species), data = time_0_time_end_stack_aov)
+aov = aov(Temperature ~ Species *AFGP_content, data= time_0_time_end_stack_w_afgp[which(time_0_time_end_stack_w_afgp$TimeStage=="TEnd"),1:4])
 summary(aov)
-coefficients(aov)
+
+tuk<- TukeyHSD(aov)
+plot(tuk)
 # stack_time_end2 = stack_time_end stack_time_end2$Species <- sub('Ncor[0-9]',
 # 'Ncor', stack_time_end2$Species, perl=TRUE) stack_time_end2$Species <-
 # sub('Cwil[0-9]', 'Cwil', stack_time_end2$Species, perl=TRUE)
