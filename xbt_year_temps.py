@@ -3,6 +3,11 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib import colors
+
+from matplotlib import cm
+
 from scipy.interpolate import griddata
 
 
@@ -27,7 +32,6 @@ Longitude = 0
 Year = []
 Country = []
 Project = []
-Deep_Freeze_years = []
 coordinates_used = []
 Month = 0
 Day = 0
@@ -37,6 +41,12 @@ location = {"Bismark_Strait": [-64.866794, -63.650144],
             "Gerlache_Strait": [-64.716771, -63.016668],
             "Hugo_Island": [-64.683492, -65.516931],
             "Dallman_Bay": [-63.900278, -62.76677]}
+
+
+catch_depths = {"Bismark_Strait": [170, 200],
+                "Gerlache_Strait": [150, 400],
+                "Hugo_Island": [650, 700],
+                "Dallman_Bay": [175, 180]}
 
 # Each degree of latitude is approximately 69 miles (111 kilometers) apart.
 radius = 1.5
@@ -95,15 +105,16 @@ def extract_temp_depth_data(file_in, location_name, radius):
                 except ValueError:
                     continue
 
-        elif line[0] == 'Project':
-            global Project
-
-            if line[4] not in Project:
-                Project.append(line[4])
-            elif line[4] == "DEEPFREEZE":
-                Deep_Freeze_years.append(Year_it)
-            else:
-                continue
+        # elif line[0] == 'Project':
+        #     global Project
+        #
+        #     if line[4] not in Project:
+        #         Project.append(line[4])
+        #     elif line[4] == "DEEPFREEZE":
+        #         global Deep_Freeze_years
+        #         Deep_Freeze_years.append(Year_it)
+        #     else:
+        #         continue
 
         elif line[0] == 'Country':
             global Country
@@ -188,6 +199,8 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
         ax.invert_yaxis()
+        ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
+                        location_name][1], color="none", edgecolor="grey", hatch='x')
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
@@ -228,6 +241,8 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
         ax.invert_yaxis()
+        ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
+                        location_name][1], color="none", edgecolor="grey", hatch='x')
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
@@ -250,29 +265,40 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
 
         # I control the range of my colorbar by removing data
         # outside of my range of interest
-        zmin = -10
-        zmax = 10
+        zmin = -2
+        zmax = 2
         zi[(zi < zmin) | (zi > zmax)] = None
 
         # Create the contour plot
-        CS = plt.contourf(xi, yi, zi, 20, cmap='bwr', vmax=2, vmin=-2)
+        CS = plt.contourf(xi, yi, zi, 20, cmap='bwr',
+                          vmax=zmax, vmin=zmin, extend="both")
 
         ax = plt.gca()
-        #plt.xticks(np.arange(1, 13, 1.0))
+        # plt.xticks(np.arange(1, 13, 1.0))
         months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         plt.xticks(np.arange(1, 13, 1.0), months, size='small', rotation=17)
+        color_ticks = np.linspace(-2, 2, 9, endpoint=True)
 
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
         ax.invert_yaxis()
         ax.grid(True)
+        ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
+                        location_name][1], color="none", edgecolor="grey", hatch='x')
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
         ax.set_title("%s" % (location_name))
-        cb = plt.colorbar()
-        cb.set_label("Temperature ($^\circ$C)")
-
+        # cb = plt.colorbar(cmap='bwr', orientation='vertical', ticklocation='auto', extend='both',
+        # spacing='uniform', ticks=color_ticks, format=None, drawedges=False,
+        # filled=True, extendfrac=None, extendrect=False, label="Temperature
+        # ($^\circ$C)")
+        CS.cmap.set_under('blue')
+        CS.cmap.set_over('red')
+        cmap = cm.get_cmap('bwr', 20)
+        norm = colors.BoundaryNorm(color_ticks, cmap.N)
+        CS.set_clim(-2, 2)
+        plt.colorbar(label="Temperature ($^\circ$C)")
     output_dir = "./"
     plt.savefig(output_dir +
                 "Monthly_Temp_v_Depth_%s_radius_%s_%s.png" % (location_name, radius, stat), dpi=500)
@@ -285,13 +311,14 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
 
 def run_all_for_rad(location_name, radius):
     files_location = './WOD_2_all_sensors/'
-    file_list = ['use_ocldb1483123265.6373.APB.csv',
-                 'use_ocldb1483123265.6373.CTD.csv',
-                 'use_ocldb1483123265.6373.GLD.csv',
-                 'use_ocldb1483123265.6373.MBT.csv',
-                 'use_ocldb1483123265.6373.OSD.csv',
-                 'use_ocldb1483123265.6373.PFL.csv',
-                 'use_ocldb1483123265.6373.XBT.csv']
+    # file_list = ['use_ocldb1483123265.6373.APB.csv', ]
+    #  'use_ocldb1483123265.6373.CTD.csv',
+    #  'use_ocldb1483123265.6373.GLD.csv',
+    #  'use_ocldb1483123265.6373.MBT.csv',
+    #  'use_ocldb1483123265.6373.OSD.csv',
+    #  'use_ocldb1483123265.6373.PFL.csv',
+    #  'use_ocldb1483123265.6373.XBT.csv']
+    file_list = ['use_ocldb1483123265.6373.XBT.csv']
     for file_name in file_list:
         file_it = files_location + file_name
         extract_temp_depth_data(file_it, location_name, radius)
@@ -328,8 +355,8 @@ def run_all_for_rad(location_name, radius):
     time_span_out.write("\n")
     time_span_out.write("Number of XBT/CTD casts used:%s \n" %
                         (count_data_sets))
-    time_span_out.write("Project: DeepFreeze years: %s to %s" %
-                        (min(Deep_Freeze_years), max(Deep_Freeze_years)))
+    # time_span_out.write("Project: DeepFreeze years: %s to %s" %
+    #                     (min(Deep_Freeze_years), max(Deep_Freeze_years)))
     time_span_out.close
 
     make_grid_graph(data_dic, "stat", location_name, radius)
@@ -346,8 +373,8 @@ def run_all_for_rad(location_name, radius):
     Project = []
     global Country
     Country = []
-    global Deep_Freeze_years
-    Deep_Freeze_years = []
+    # global Deep_Freeze_years
+    # Deep_Freeze_years = []
     global coordinates_used
 
     cordout = open("Monthly_Temp_v_Depth_%s_radius_%s.tsv" %
@@ -360,6 +387,6 @@ def run_all_for_rad(location_name, radius):
     count_data_sets = 0
 
 for loc in location.keys():
-    #run_all_for_rad(loc, 0.5)
-    run_all_for_rad(loc, 1)
-    #run_all_for_rad(loc, 1.5)
+    run_all_for_rad(loc, 0.5)
+    # run_all_for_rad(loc, 1) # <- RUN FOR BEST FIGS
+    # run_all_for_rad(loc, 1.5)
