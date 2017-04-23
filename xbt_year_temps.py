@@ -161,7 +161,7 @@ def extract_temp_depth_data(file_in, location_name, radius):
 # Make grid graph
 
 
-def make_grid_graph(data_dictionary, stat, location_name, radius):
+def make_grid_graph(data_dictionary, stat, location_name, radius, shade):
     # Convert from pandas dataframes to numpy arrays
     X, Y, Z = np.array([]), np.array([]), np.array([])
 
@@ -199,8 +199,9 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
         ax.invert_yaxis()
-        ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
-                        location_name][1], color="none", edgecolor="grey", hatch='x')
+        if shade == 1:
+            ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
+                location_name][1], color="", edgecolor="yellow", linewidth=2)
         ax.grid(True)
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
@@ -241,9 +242,10 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         zc = CS.collections[6]
         plt.setp(zc, linewidth=4)
         ax.invert_yaxis()
-        ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
-                        location_name][1], color="none", edgecolor="grey", hatch='x')
-        ax.grid(True)
+        if shade == 1:
+            ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
+                location_name][1], color="", edgecolor="yellow", linewidth=2)
+        ax.grid(True, color='dimgrey')
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
         ax.set_title("%s" % (location_name))
@@ -284,8 +286,7 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         plt.setp(zc, linewidth=4)
         ax.invert_yaxis()
         ax.grid(True)
-        ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
-                        location_name][1], color="none", edgecolor="grey", hatch='x')
+
         ax.set_xlabel('Month')
         ax.set_ylabel('Depth (m)')
         ax.set_title("%s" % (location_name))
@@ -295,13 +296,18 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
         # ($^\circ$C)")
         CS.cmap.set_under('blue')
         CS.cmap.set_over('red')
-        cmap = cm.get_cmap('bwr', 20)
-        norm = colors.BoundaryNorm(color_ticks, cmap.N)
         CS.set_clim(-2, 2)
         plt.colorbar(label="Temperature ($^\circ$C)")
+        if shade == 1:
+            ax.fill_between(np.arange(1, 13, 1.0), catch_depths[location_name][0], catch_depths[
+                location_name][1], color="", edgecolor="yellow", linewidth=2)
     output_dir = "./"
-    plt.savefig(output_dir +
-                "Monthly_Temp_v_Depth_%s_radius_%s_%s.png" % (location_name, radius, stat), dpi=500)
+    if shade == 1:
+        plt.savefig(output_dir +
+                    "Monthly_Temp_v_Depth_%s_radius_%s_%s_SHADE.png" % (location_name, radius, stat), dpi=200, rasterized=True)
+    else:
+        plt.savefig(output_dir +
+                    "Monthly_Temp_v_Depth_%s_radius_%s_%s.png" % (location_name, radius, stat), dpi=200, rasterized=True)
     plt.close()
 ##########################################################################
 
@@ -309,16 +315,16 @@ def make_grid_graph(data_dictionary, stat, location_name, radius):
 # Xbt data
 
 
-def run_all_for_rad(location_name, radius):
+def run_all_for_rad(location_name, radius, shade):
     files_location = './WOD_2_all_sensors/'
-    # file_list = ['use_ocldb1483123265.6373.APB.csv', ]
-    #  'use_ocldb1483123265.6373.CTD.csv',
-    #  'use_ocldb1483123265.6373.GLD.csv',
-    #  'use_ocldb1483123265.6373.MBT.csv',
-    #  'use_ocldb1483123265.6373.OSD.csv',
-    #  'use_ocldb1483123265.6373.PFL.csv',
-    #  'use_ocldb1483123265.6373.XBT.csv']
-    file_list = ['use_ocldb1483123265.6373.XBT.csv']
+    file_list = ['use_ocldb1483123265.6373.APB.csv',
+                 'use_ocldb1483123265.6373.CTD.csv',
+                 'use_ocldb1483123265.6373.GLD.csv',
+                 'use_ocldb1483123265.6373.MBT.csv',
+                 'use_ocldb1483123265.6373.OSD.csv',
+                 'use_ocldb1483123265.6373.PFL.csv',
+                 'use_ocldb1483123265.6373.XBT.csv']
+    #file_list = ['use_ocldb1483123265.6373.XBT.csv']
     for file_name in file_list:
         file_it = files_location + file_name
         extract_temp_depth_data(file_it, location_name, radius)
@@ -359,11 +365,11 @@ def run_all_for_rad(location_name, radius):
     #                     (min(Deep_Freeze_years), max(Deep_Freeze_years)))
     time_span_out.close
 
-    make_grid_graph(data_dic, "stat", location_name, radius)
+    make_grid_graph(data_dic, "stat", location_name, radius, shade)
 
-    make_grid_graph(data_dic, "count", location_name, radius)
+    make_grid_graph(data_dic, "count", location_name, radius, shade)
 
-    make_grid_graph(data_dic, "variance", location_name, radius)
+    make_grid_graph(data_dic, "variance", location_name, radius, shade)
     # CLEAR dictionary
     global data_dic
     data_dic = {}
@@ -387,6 +393,7 @@ def run_all_for_rad(location_name, radius):
     count_data_sets = 0
 
 for loc in location.keys():
-    run_all_for_rad(loc, 0.5)
-    # run_all_for_rad(loc, 1) # <- RUN FOR BEST FIGS
+    #run_all_for_rad(loc, 0.5,1)
+    run_all_for_rad(loc, 1, 0)
+    run_all_for_rad(loc, 1, 1)  # <- RUN FOR BEST FIGS
     # run_all_for_rad(loc, 1.5)

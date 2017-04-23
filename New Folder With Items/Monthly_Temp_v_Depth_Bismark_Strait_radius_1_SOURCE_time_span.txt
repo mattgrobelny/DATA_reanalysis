@@ -12,4 +12,3 @@ Months covered with data:
 9
 
 Number of XBT/CTD casts used:8008 
-Project: DeepFreeze years: 1974 to 1987

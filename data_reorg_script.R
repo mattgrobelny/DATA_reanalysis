@@ -40,6 +40,7 @@ Cwil_data <- vector()
 for (i in 10:15) {
     Cwil_data <- c(Cwil_data, Master_species_gradient_logger_data[, i])
 }
+
 # Cwil_data<-data.frame(Cwil_data)
 
 # Lsq
